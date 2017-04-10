@@ -3,15 +3,16 @@ package com.innopolis.al_dente;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.SingleSelectionModel;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import sample.App;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 
 public class MainView {
 
@@ -37,7 +38,9 @@ public class MainView {
 
         Tab tab = getCurrentTab(parent);
 
-        tab.setText(header);
+        Label label = (Label) tab.getGraphic();
+
+        label.setText(header);
     }
 
     public void initializeTabPane(Parent parent, Scene scene){
@@ -117,8 +120,11 @@ public class MainView {
         HBox hbox = new HBox();
 
         Tab tab = new Tab();
-        tab.setText(header);
         tab.setId(String.valueOf(count));
+
+        final Label label = new Label(header);
+
+        tab.setGraphic(label);
 
 
         TextArea textArea = new TextArea(content);
@@ -133,8 +139,20 @@ public class MainView {
 
         setCurrentTab(parent, tab);
 
+        tab.setClosable(true);
+
         tabPane.getTabs().add(tab);
 
-        System.out.println();
+        label.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+                if (event.getButton() == MouseButton.MIDDLE) {
+
+                    System.out.println();
+                }
+            }
+        });
+
     }
 }
