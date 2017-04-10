@@ -8,9 +8,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 
@@ -18,6 +17,7 @@ public class MainView {
 
     private static final String DEFAULT_NAME = "Untitled";
     private static final int MAX_TABS_COUNT = 20;
+    final KeyCombination keyShiftTab = new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN);
 
     private static MainView instance;
     private int TEXT_AREA_INDEX = 0;
@@ -149,10 +149,27 @@ public class MainView {
 
                 if (event.getButton() == MouseButton.MIDDLE) {
 
-                    tabPane.getTabs().remove(tab);
+                    closeTab(tabPane, tab);
                 }
             }
         });
 
+        hbox.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()  {
+
+            @Override
+            public void handle(KeyEvent e) {
+
+                if (keyShiftTab.match(e)) {
+
+                    closeTab(tabPane, tab);
+                    e.consume();
+                }
+            }
+        });
+    }
+
+    private void closeTab(TabPane tabPane, Tab tab) {
+
+        tabPane.getTabs().remove(tab);
     }
 }
