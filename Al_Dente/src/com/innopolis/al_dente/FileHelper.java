@@ -1,4 +1,4 @@
-package sample;
+package com.innopolis.al_dente;
 
 
 import java.io.*;

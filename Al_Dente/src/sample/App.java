@@ -1,17 +1,19 @@
 package sample;
 
+import com.innopolis.al_dente.MainView;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class App extends Application {
 
-    private static final String FILE_NAME = "sample.fxml";
+    private static final String FILE_NAME = "index.fxml";
     private static final int WIDTH = 800;
     private static final int HEIGHT = 700;
     private static final String TITLE = "Al Dente";
+    public static final String DEFAULT_PATH = "user.home";
 
     private static Parent parent;
     private static Stage PrimaryStage;

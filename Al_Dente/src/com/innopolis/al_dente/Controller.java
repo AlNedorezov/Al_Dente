@@ -1,8 +1,9 @@
-package sample;
+package com.innopolis.al_dente;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.MenuItem;
 import javafx.stage.FileChooser;
+import sample.App;
 
 import java.io.File;
 
@@ -28,19 +29,19 @@ public class Controller {
 
                 case MENU_NEW_FILE :{
 
-                    view.createNewTab(Main.getParent(), null, null);
+                    view.createNewTab(App.getParent(), null, null);
                 }break;
                 case OPEN_FILE :{
 
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Open text file");
 
-                    String lastPath = Main.getLastPath();
+                    String lastPath = App.getLastPath();
 
                     if (lastPath == null || lastPath.isEmpty()) {
 
                         fileChooser.setInitialDirectory(
-                                new File(System.getProperty("user.home"))
+                                new File(System.getProperty(App.DEFAULT_PATH))
                         );
                     }
                     else {
@@ -48,15 +49,15 @@ public class Controller {
                         fileChooser.setInitialDirectory( new File(lastPath) );
                     }
 
-                    File file = fileChooser.showOpenDialog(Main.getPrimaryStage());
+                    File file = fileChooser.showOpenDialog(App.getPrimaryStage());
 
                     String header = file.getName();
 
-                    Main.setLastPath(file.getParent());
+                    App.setLastPath(file.getParent());
 
                     String content = fileHelper.getFileContent(file.getAbsolutePath());
 
-                    view.createNewTab(Main.getParent(), header, content);
+                    view.createNewTab(App.getParent(), header, content);
 
 
 
@@ -66,12 +67,12 @@ public class Controller {
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Save text file");
 
-                    String lastPath = Main.getLastPath();
+                    String lastPath = App.getLastPath();
 
                     if (lastPath == null || lastPath.isEmpty()) {
 
                         fileChooser.setInitialDirectory(
-                                new File(System.getProperty("user.home"))
+                                new File(System.getProperty(App.DEFAULT_PATH))
                         );
                     }
                     else {
@@ -79,9 +80,11 @@ public class Controller {
                         fileChooser.setInitialDirectory( new File(lastPath) );
                     }
 
-                    File file = fileChooser.showSaveDialog(Main.getPrimaryStage());
+                    File file = fileChooser.showSaveDialog(App.getPrimaryStage());
 
-                    String content = view.getCurentTab(Main.getParent());
+                    App.setLastPath(file.getParent());
+
+                    String content = view.getCurentTab(App.getParent());
 
                     fileHelper.createNewFile(file.getAbsolutePath(), content);
 

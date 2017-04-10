@@ -1,4 +1,4 @@
-package sample;
+package com.innopolis.al_dente;
 
 
 import javafx.beans.value.ChangeListener;
