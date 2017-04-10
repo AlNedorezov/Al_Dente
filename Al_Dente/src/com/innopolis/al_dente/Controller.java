@@ -82,9 +82,13 @@ public class Controller {
 
                     File file = fileChooser.showSaveDialog(App.getPrimaryStage());
 
+                    String header = file.getName();
+
+                    view.updateCurrentTabHeader(App.getParent(), header);
+
                     App.setLastPath(file.getParent());
 
-                    String content = view.getCurentTab(App.getParent());
+                    String content = view.getCurrentTabContent(App.getParent());
 
                     fileHelper.createNewFile(file.getAbsolutePath(), content);
 

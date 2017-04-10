@@ -11,6 +11,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
+import sample.App;
 
 public class MainView {
 
@@ -32,6 +33,13 @@ public class MainView {
         return instance;
     }
 
+    public void updateCurrentTabHeader(Parent parent, String header){
+
+        Tab tab = getCurrentTab(parent);
+
+        tab.setText(header);
+    }
+
     public void initializeTabPane(Parent parent, Scene scene){
 
         TabPane tabPane = (TabPane) parent.lookup("#tabPane");
@@ -48,13 +56,9 @@ public class MainView {
         });
     }
 
-    public String getCurentTab(Parent parent){
+    public String getCurrentTabContent(Parent parent){
 
-        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
-
-        SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
-
-        Tab tab = selectionModel.getSelectedItem();
+        Tab tab = getCurrentTab(parent);
 
         String content = null;
 
@@ -65,6 +69,17 @@ public class MainView {
         content =  textArea.getText();
 
         return content;
+    }
+
+    private Tab getCurrentTab(Parent parent){
+
+        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+
+        SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+
+        Tab tab = selectionModel.getSelectedItem();
+
+        return tab;
     }
 
     private void setCurrentTab(Parent parent, Tab tab ){
