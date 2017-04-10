@@ -1,7 +1,11 @@
 package com.innopolis.al_dente;
 
+import com.innopolis.al_dente.models.TabTag;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
 import sample.App;
 
@@ -11,7 +15,9 @@ public class Controller {
 
     private static final String MENU_NEW_FILE = "menu_new_file";
     private static final String SAVE_FILE = "save_file";
+    private static final String SAVE_FILE_AS = "save_file_as";
     private static final String OPEN_FILE = "open_file";
+    private static final String EXIT = "exit";
 
     public void handleAboutAction(ActionEvent event) {
 
@@ -64,36 +70,79 @@ public class Controller {
                 }break;
                 case SAVE_FILE :{
 
-                    FileChooser fileChooser = new FileChooser();
-                    fileChooser.setTitle("Save text file");
+                    saveFile(App.getParent(), view, fileHelper);
+                }break;
 
-                    String lastPath = App.getLastPath();
+                case SAVE_FILE_AS :{
 
-                    if (lastPath == null || lastPath.isEmpty()) {
+                    saveFileAs(view, fileHelper);
+                }break;
 
-                        fileChooser.setInitialDirectory(
-                                new File(System.getProperty(App.DEFAULT_PATH))
-                        );
-                    }
-                    else {
+                case EXIT: {
 
-                        fileChooser.setInitialDirectory( new File(lastPath) );
-                    }
-
-                    File file = fileChooser.showSaveDialog(App.getPrimaryStage());
-
-                    String header = file.getName();
-
-                    view.updateCurrentTabHeader(App.getParent(), header);
-
-                    App.setLastPath(file.getParent());
-
-                    String content = view.getCurrentTabContent(App.getParent());
-
-                    fileHelper.createNewFile(file.getAbsolutePath(), content);
-
+                    closeApplication();
                 }break;
             }
         }
+    }
+
+    private void closeApplication() {
+
+        Platform.exit();
+        System.exit(0);
+    }
+
+    private void saveFile(Parent parent, MainView view, FileHelper fileHelper){
+
+        TabTag item = view.getCurrentTabTag(parent);
+
+        if (item == null || !item.wasSaved()){
+
+            saveFileAs(view, fileHelper);
+
+        }
+        else  {
+
+            String content = view.getCurrentTabContent(parent);
+            fileHelper.updateFile(item.getPath(), content);
+        }
+
+
+    }
+
+    private void saveFileAs(MainView view, FileHelper fileHelper){
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save File As");
+
+        String lastPath = App.getLastPath();
+
+        if (lastPath == null || lastPath.isEmpty()) {
+
+            fileChooser.setInitialDirectory(
+                    new File(System.getProperty(App.DEFAULT_PATH))
+            );
+        }
+        else {
+
+            fileChooser.setInitialDirectory( new File(lastPath) );
+        }
+
+        File file = fileChooser.showSaveDialog(App.getPrimaryStage());
+
+        String header = file.getName();
+
+        TabTag item = new TabTag();
+        item.setWasSaved(true);
+        item.setPath(file.getAbsolutePath());
+
+        view.updateCurrentTabHeader(App.getParent(), header);
+        view.setCurrentTabTag(App.getParent(), item );
+
+        App.setLastPath(file.getParent());
+
+        String content = view.getCurrentTabContent(App.getParent());
+
+        fileHelper.createNewFile(file.getAbsolutePath(), content);
     }
 }

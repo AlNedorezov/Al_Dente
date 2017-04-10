@@ -1,9 +1,9 @@
 package com.innopolis.al_dente;
 
 
+import com.innopolis.al_dente.models.TabTag;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 
 public class MainView {
 
@@ -74,7 +73,29 @@ public class MainView {
         return content;
     }
 
-    private Tab getCurrentTab(Parent parent){
+    public TabTag getCurrentTabTag(Parent parent){
+
+        Tab tab = getCurrentTab(parent);
+
+        Object obj = tab.getUserData();
+
+        if (obj instanceof TabTag){
+
+            TabTag item = (TabTag) obj;
+
+            return item;
+        }
+
+        return null;
+    }
+
+    public void setCurrentTabTag(Parent parent, TabTag item){
+
+        Tab tab = getCurrentTab(parent);
+        tab.setUserData(item);
+    }
+
+    public Tab getCurrentTab(Parent parent){
 
         TabPane tabPane = (TabPane) parent.lookup("#tabPane");
 

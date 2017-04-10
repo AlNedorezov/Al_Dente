@@ -47,6 +47,20 @@ public class FileHelper {
             }
     }
 
+    public void updateFile (String path, String content){
+
+        deleteFile(path);
+        createNewFile(path, content);
+    }
+
+    public boolean deleteFile(String path){
+
+        File file = new File(path);
+
+        return file.delete();
+
+    }
+
     public String getFileContent(String path){
 
         try {
