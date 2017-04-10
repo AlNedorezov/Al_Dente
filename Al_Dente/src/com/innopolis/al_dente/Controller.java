@@ -39,34 +39,7 @@ public class Controller {
                 }break;
                 case OPEN_FILE :{
 
-                    FileChooser fileChooser = new FileChooser();
-                    fileChooser.setTitle("Open text file");
-
-                    String lastPath = App.getLastPath();
-
-                    if (lastPath == null || lastPath.isEmpty()) {
-
-                        fileChooser.setInitialDirectory(
-                                new File(System.getProperty(App.DEFAULT_PATH))
-                        );
-                    }
-                    else {
-
-                        fileChooser.setInitialDirectory( new File(lastPath) );
-                    }
-
-                    File file = fileChooser.showOpenDialog(App.getPrimaryStage());
-
-                    String header = file.getName();
-
-                    App.setLastPath(file.getParent());
-
-                    String content = fileHelper.getFileContent(file.getAbsolutePath());
-
-                    view.createNewTab(App.getParent(), header, content);
-
-
-
+                   openFile(view, fileHelper);
                 }break;
                 case SAVE_FILE :{
 
@@ -75,7 +48,7 @@ public class Controller {
 
                 case SAVE_FILE_AS :{
 
-                    saveFileAs(view, fileHelper);
+                    saveFileAs(App.getParent(), view, fileHelper);
                 }break;
 
                 case EXIT: {
@@ -84,6 +57,38 @@ public class Controller {
                 }break;
             }
         }
+    }
+
+    private void openFile(MainView view, FileHelper fileHelper) {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open text file");
+
+        String lastPath = App.getLastPath();
+
+        if (lastPath == null || lastPath.isEmpty()) {
+
+            fileChooser.setInitialDirectory(
+                    new File(System.getProperty(App.DEFAULT_PATH))
+            );
+        }
+        else {
+
+            fileChooser.setInitialDirectory( new File(lastPath) );
+        }
+
+        File file = fileChooser.showOpenDialog(App.getPrimaryStage());
+
+        String header = file.getName();
+
+        App.setLastPath(file.getParent());
+
+        String content = fileHelper.getFileContent(file.getAbsolutePath());
+
+        view.createNewTab(App.getParent(), header, content);
+
+
+
     }
 
     private void closeApplication() {
@@ -98,7 +103,7 @@ public class Controller {
 
         if (item == null || !item.wasSaved()){
 
-            saveFileAs(view, fileHelper);
+            saveFileAs(parent, view, fileHelper);
 
         }
         else  {
@@ -106,11 +111,9 @@ public class Controller {
             String content = view.getCurrentTabContent(parent);
             fileHelper.updateFile(item.getPath(), content);
         }
-
-
     }
 
-    private void saveFileAs(MainView view, FileHelper fileHelper){
+    private void saveFileAs(Parent parent, MainView view, FileHelper fileHelper){
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save File As");
@@ -132,16 +135,26 @@ public class Controller {
 
         String header = file.getName();
 
+        App.setLastPath(file.getParent());
+
+        String content = view.getCurrentTabContent(App.getParent());
+
         TabTag item = new TabTag();
         item.setWasSaved(true);
         item.setPath(file.getAbsolutePath());
 
-        view.updateCurrentTabHeader(App.getParent(), header);
-        view.setCurrentTabTag(App.getParent(), item );
+        TabTag tabTag = view.getCurrentTabTag(parent);
 
-        App.setLastPath(file.getParent());
+        if (tabTag == null || !tabTag.wasSaved()) {
 
-        String content = view.getCurrentTabContent(App.getParent());
+            view.updateCurrentTabHeader(App.getParent(), header);
+            view.setCurrentTabTag(App.getParent(), item);
+        }
+        else {
+
+            view.createNewTab(App.getParent(), header, content );
+            view.setCurrentTabTag(App.getParent(), item);
+        }
 
         fileHelper.createNewFile(file.getAbsolutePath(), content);
     }
