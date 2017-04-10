@@ -31,19 +31,6 @@ public class App extends Application {
 
         Scene scene = new Scene(parent, WIDTH, HEIGHT);
 
-       /* scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-
-                if (mouseEvent.getButton() == MouseButton.MIDDLE){
-
-                    System.out.println();
-                }
-
-                System.out.println();
-            }
-        });*/
-
         MainView.getInstance().initializeTabPane(parent, scene);
 
         primaryStage.setTitle(TITLE);

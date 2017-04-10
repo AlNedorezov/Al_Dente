@@ -149,7 +149,7 @@ public class MainView {
 
                 if (event.getButton() == MouseButton.MIDDLE) {
 
-                    System.out.println();
+                    tabPane.getTabs().remove(tab);
                 }
             }
         });
