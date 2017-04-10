@@ -2,15 +2,8 @@ package sample;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -21,7 +14,8 @@ public class Main extends Application {
     private static final String TITLE = "Al Dente";
 
     private static Parent parent;
-    private static Stage primaryStage;
+    private static Stage PrimaryStage;
+    private static String LastPath = null;
 
 
     @Override
@@ -29,11 +23,11 @@ public class Main extends Application {
 
         parent = FXMLLoader.load(getClass().getResource(FILE_NAME));
 
+        PrimaryStage = primaryStage;
+
         Scene scene = new Scene(parent, WIDTH, HEIGHT);
 
-        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
-        tabPane.setPrefWidth(scene.getWidth());
-        tabPane.setPrefHeight(scene.getHeight());
+        MainView.getInstance().initializeTabPane(parent, scene);
 
         primaryStage.setTitle(TITLE);
         primaryStage.setScene(scene);
@@ -45,9 +39,17 @@ public class Main extends Application {
         return parent;
     }
 
+    public static String getLastPath() {
+        return LastPath;
+    }
+
+    public static void setLastPath(String lastPath) {
+        LastPath = lastPath;
+    }
+
     public static Stage getPrimaryStage(){
 
-        return primaryStage;
+        return PrimaryStage;
     }
 
     public static void main(String[] args) {

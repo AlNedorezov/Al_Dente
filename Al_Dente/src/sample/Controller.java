@@ -35,13 +35,24 @@ public class Controller {
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Open text file");
 
-                    fileChooser.setInitialDirectory(
-                            new File(System.getProperty("user.home"))
-                    );
+                    String lastPath = Main.getLastPath();
+
+                    if (lastPath == null || lastPath.isEmpty()) {
+
+                        fileChooser.setInitialDirectory(
+                                new File(System.getProperty("user.home"))
+                        );
+                    }
+                    else {
+
+                        fileChooser.setInitialDirectory( new File(lastPath) );
+                    }
 
                     File file = fileChooser.showOpenDialog(Main.getPrimaryStage());
 
                     String header = file.getName();
+
+                    Main.setLastPath(file.getParent());
 
                     String content = fileHelper.getFileContent(file.getAbsolutePath());
 
@@ -55,9 +66,18 @@ public class Controller {
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Save text file");
 
-                    fileChooser.setInitialDirectory(
-                            new File(System.getProperty("user.home"))
-                    );
+                    String lastPath = Main.getLastPath();
+
+                    if (lastPath == null || lastPath.isEmpty()) {
+
+                        fileChooser.setInitialDirectory(
+                                new File(System.getProperty("user.home"))
+                        );
+                    }
+                    else {
+
+                        fileChooser.setInitialDirectory( new File(lastPath) );
+                    }
 
                     File file = fileChooser.showSaveDialog(Main.getPrimaryStage());
 

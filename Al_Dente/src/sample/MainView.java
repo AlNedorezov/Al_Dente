@@ -1,16 +1,16 @@
 package sample;
 
 
-import javafx.collections.ObservableList;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
-
-import java.util.List;
 
 public class MainView {
 
@@ -18,6 +18,7 @@ public class MainView {
     private static final int MAX_TABS_COUNT = 20;
 
     private static MainView instance;
+    private int TEXT_AREA_INDEX = 0;
 
     private MainView(){}
 
@@ -31,26 +32,48 @@ public class MainView {
         return instance;
     }
 
+    public void initializeTabPane(Parent parent, Scene scene){
+
+        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+        tabPane.setPrefWidth(scene.getWidth());
+        tabPane.setPrefHeight(scene.getHeight());
+
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+            @Override
+            public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
+
+                setCurrentTab(parent, newTab);
+            }
+        });
+    }
+
     public String getCurentTab(Parent parent){
 
         TabPane tabPane = (TabPane) parent.lookup("#tabPane");
 
+        SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+
+        Tab tab = selectionModel.getSelectedItem();
+
         String content = null;
 
-        List<Tab> listTabs = tabPane.getTabs();
+        HBox hbox = (HBox) tab.getContent();
 
-        if (listTabs.size() > 0){
+        TextArea textArea = (TextArea) hbox.getChildren().get(TEXT_AREA_INDEX);
 
-            Tab tab = listTabs.get(0);
-
-            HBox hbox = (HBox) tab.getContent();
-
-            TextArea textArea = (TextArea) hbox.getChildren().get(0);
-
-            content =  textArea.getText();
-        }
+        content =  textArea.getText();
 
         return content;
+    }
+
+    private void setCurrentTab(Parent parent, Tab tab ){
+
+        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+
+        SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+
+        selectionModel.select(tab);
     }
 
     public void createNewTab(Parent parent, String header,  String content){
@@ -80,6 +103,7 @@ public class MainView {
 
         Tab tab = new Tab();
         tab.setText(header);
+        tab.setId(String.valueOf(count));
 
 
         TextArea textArea = new TextArea(content);
@@ -91,6 +115,8 @@ public class MainView {
         hbox.setAlignment(Pos.CENTER);
 
         tab.setContent(hbox);
+
+        setCurrentTab(parent, tab);
 
         tabPane.getTabs().add(tab);
 
