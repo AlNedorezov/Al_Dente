@@ -16,7 +16,8 @@ public class MainView {
 
     private static final String DEFAULT_NAME = "Untitled";
     private static final int MAX_TABS_COUNT = 20;
-    final KeyCombination keyShiftTab = new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN);
+    final KeyCombination keyCloseTabCombination = new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN);
+    final KeyCombination keyNewTabCombination = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
 
     private static MainView instance;
     private int TEXT_AREA_INDEX = 0;
@@ -54,6 +55,19 @@ public class MainView {
             public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
 
                 setCurrentTab(parent, newTab);
+            }
+        });
+
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()  {
+
+            @Override
+            public void handle(KeyEvent e) {
+
+                if (keyNewTabCombination.match(e)) {
+
+                    createNewTab(parent, null, null);
+                    e.consume();
+                }
             }
         });
     }
@@ -180,7 +194,7 @@ public class MainView {
             @Override
             public void handle(KeyEvent e) {
 
-                if (keyShiftTab.match(e)) {
+                if (keyCloseTabCombination.match(e)) {
 
                     closeTab(tabPane, tab);
                     e.consume();
