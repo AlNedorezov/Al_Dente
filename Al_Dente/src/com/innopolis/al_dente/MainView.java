@@ -4,14 +4,13 @@ package com.innopolis.al_dente;
 import com.innopolis.al_dente.models.TabTag;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
-import javafx.event.EventHandler;
-import sample.App;
 
 public class MainView {
 
@@ -37,6 +36,41 @@ public class MainView {
 
         parent = p;
         return instance;
+    }
+
+    public void initializeTabPane(Scene scene){
+
+        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+        tabPane.setPrefWidth(scene.getWidth());
+        tabPane.setPrefHeight(scene.getHeight());
+
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+            @Override
+            public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
+
+                setCurrentTab(newTab);
+            }
+        });
+
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()  {
+
+            @Override
+            public void handle(KeyEvent e) {
+
+                if (keyNewTabCombination.match(e)) {
+
+                    createNewTab(null, null);
+                    e.consume();
+                }
+            }
+        });
+    }
+
+    public void updateCurrentTab(TabTag item){
+
+        Tab tab = getCurrentTab();
+        tab.setUserData(item);
     }
 
     public void updateCurrentTabHeader(String header){
@@ -74,35 +108,6 @@ public class MainView {
         label.setText(header);
     }
 
-    public void initializeTabPane(Scene scene){
-
-        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
-        tabPane.setPrefWidth(scene.getWidth());
-        tabPane.setPrefHeight(scene.getHeight());
-
-
-        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-            @Override
-            public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
-
-                setCurrentTab(newTab);
-            }
-        });
-
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()  {
-
-            @Override
-            public void handle(KeyEvent e) {
-
-                if (keyNewTabCombination.match(e)) {
-
-                    createNewTab(null, null);
-                    e.consume();
-                }
-            }
-        });
-    }
-
     public String getCurrentTabContent(){
 
         Tab tab = getCurrentTab();
@@ -132,12 +137,6 @@ public class MainView {
         }
 
         return null;
-    }
-
-    public void setCurrentTabTag(TabTag item){
-
-        Tab tab = getCurrentTab();
-        tab.setUserData(item);
     }
 
     public Tab getCurrentTab(){

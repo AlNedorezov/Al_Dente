@@ -96,7 +96,7 @@ public class Controller {
         item.setHeader(header);
 
         view.createNewTab(header, content);
-        view.setCurrentTabTag(item);
+        view.updateCurrentTab(item);
     }
 
     private void closeApplication() {
@@ -121,7 +121,7 @@ public class Controller {
             fileHelper.updateFile(item.getPath(), content);
             item.setContent(content);
 
-            view.setCurrentTabTag(item);
+            view.updateCurrentTab(item);
             view.updateCurrentTabSaveState(false);
         }
     }
@@ -168,7 +168,7 @@ public class Controller {
             view.createNewTab(header, content );
         }
 
-        view.setCurrentTabTag(item);
+        view.updateCurrentTab(item);
         fileHelper.createNewFile(file.getAbsolutePath(), content);
     }
 }
