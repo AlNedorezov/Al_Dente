@@ -19,6 +19,7 @@ import java.util.Optional;
 public class MainView {
 
     private static final String DEFAULT_NAME = "Untitled";
+    private static final String TAB_PANE_ID = "#tabPane";
     private static final String UNSAVED_STATE = "(*)";
     private static final int MAX_TABS_COUNT = 20;
     final KeyCombination keyCloseTabCombination = new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN);
@@ -47,7 +48,7 @@ public class MainView {
 
     public void initializeTabPane(Scene scene){
 
-        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+        TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
         tabPane.setPrefWidth(scene.getWidth());
         tabPane.setPrefHeight(scene.getHeight());
 
@@ -185,7 +186,7 @@ public class MainView {
 
     public Tab getCurrentTab(){
 
-        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+        TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
 
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 
@@ -196,7 +197,7 @@ public class MainView {
 
     private void setCurrentTab(Tab tab ){
 
-        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+        TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
 
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 
@@ -205,7 +206,7 @@ public class MainView {
 
     public void createNewTab(String header,  String content){
 
-        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+        TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
         int count =  tabPane.getTabs().size();
 
         if (count >= MAX_TABS_COUNT){
@@ -271,7 +272,7 @@ public class MainView {
 
     public void closeTab(Tab tab) {
 
-        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+        TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
         tabPane.getTabs().remove(tab);
     }
 
@@ -287,10 +288,9 @@ public class MainView {
         }
     }
 
-
     public boolean hasTabs(){
 
-        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+        TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
 
         if (tabPane.getTabs() == null || tabPane.getTabs().size() == 0 ){
 

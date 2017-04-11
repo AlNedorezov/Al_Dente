@@ -58,7 +58,7 @@ public class Controller implements IAlertListner {
                 case SAVE_FILE_AS :{
 
                     if (view.hasTabs()) {
-                        
+
                         saveFileAs(App.getParent(), view, fileHelper);
                     }
                 }break;
