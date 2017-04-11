@@ -1,6 +1,7 @@
 package com.innopolis.al_dente;
 
 
+import com.innopolis.al_dente.models.IAlertListner;
 import com.innopolis.al_dente.models.TabTag;
 import com.sun.javafx.font.freetype.HBGlyphLayout;
 import javafx.beans.value.ChangeListener;
@@ -13,6 +14,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 
+import java.util.Optional;
+
 public class MainView {
 
     private static final String DEFAULT_NAME = "Untitled";
@@ -20,6 +23,7 @@ public class MainView {
     private static final int MAX_TABS_COUNT = 20;
     final KeyCombination keyCloseTabCombination = new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN);
     final KeyCombination keyNewTabCombination = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
+    private static IAlertListner alertListner;
 
     private static MainView instance;
     private int TEXT_AREA_INDEX = 0;
@@ -28,7 +32,7 @@ public class MainView {
 
     private MainView(){}
 
-    public static MainView getInstance(Parent p){
+    public static MainView getInstance(Parent p, IAlertListner listner){
 
         if (instance == null){
 
@@ -36,6 +40,8 @@ public class MainView {
         }
 
         parent = p;
+        alertListner = listner;
+
         return instance;
     }
 
@@ -199,7 +205,7 @@ public class MainView {
         tabPane.getTabs().add(tab);
 
         setCurrentTab(tab);
-        
+
         setLabelListners(label, tabPane, tab);
 
         setHBoxListners(hbox, tabPane, tab);
@@ -207,10 +213,29 @@ public class MainView {
         setTextAreaListner(textArea, tabPane, tab);
     }
 
-    private void closeTab(TabPane tabPane, Tab tab) {
+    private void createAlertConfirm(TabPane tabPane, Tab tab){
 
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Save Changes?");
+        alert.setContentText("This file was modified. Save changes?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+
+            alertListner.onConfirm(tab);
+
+        } else {
+
+            alertListner.onCancel(tab);
+        }
+    }
+
+    public void closeTab(Tab tab) {
+
+        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
         tabPane.getTabs().remove(tab);
     }
+
 
     //--LISTNERS
 
@@ -253,7 +278,7 @@ public class MainView {
 
                 if (keyCloseTabCombination.match(e)) {
 
-                    closeTab(tabPane, tab);
+                    closeTab(tab);
                     e.consume();
                 }
             }
@@ -268,7 +293,8 @@ public class MainView {
 
                 if (event.getButton() == MouseButton.MIDDLE) {
 
-                    closeTab(tabPane, tab);
+                    //closeTab(tabPane, tab);
+                    createAlertConfirm(tabPane, tab);
                 }
             }
         });

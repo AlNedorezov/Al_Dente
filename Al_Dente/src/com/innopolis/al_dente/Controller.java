@@ -1,16 +1,18 @@
 package com.innopolis.al_dente;
 
+import com.innopolis.al_dente.models.IAlertListner;
 import com.innopolis.al_dente.models.TabTag;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
 import sample.App;
 
 import java.io.File;
 
-public class Controller {
+public class Controller implements IAlertListner {
 
     private static final String MENU_NEW_FILE = "menu_new_file";
     private static final String SAVE_FILE = "save_file";
@@ -23,7 +25,7 @@ public class Controller {
 
     public void handleAboutAction(ActionEvent event) {
 
-        MainView view = MainView.getInstance(App.getParent());
+        MainView view = MainView.getInstance(App.getParent(), this);
         FileHelper fileHelper = FileHelper.getInstance();
 
         Object obj = event.getSource();
@@ -170,5 +172,21 @@ public class Controller {
 
         view.updateCurrentTab(item);
         fileHelper.createNewFile(file.getAbsolutePath(), content);
+    }
+
+    @Override
+    public void onConfirm(Tab tab) {
+        MainView view = MainView.getInstance(App.getParent(), this);
+        FileHelper fileHelper = FileHelper.getInstance();
+
+        saveFileAs(App.getParent(), view, fileHelper );
+        view.closeTab(tab);
+    }
+
+    @Override
+    public void onCancel(Tab tab) {
+
+        MainView view = MainView.getInstance(App.getParent(), this);
+        view.closeTab(tab);
     }
 }
