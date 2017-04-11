@@ -198,13 +198,34 @@ public class MainView {
         return tab;
     }
 
-    private void setCurrentTab(Tab tab ){
+    public void setCurrentTab(Tab tab ){
 
         TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
 
         SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 
         selectionModel.select(tab);
+    }
+
+    public Tab getTabByFilePath(String path){
+
+        TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
+
+        for (Tab tab: tabPane.getTabs()) {
+
+            Object obj = tab.getUserData();
+
+            if (obj != null && obj instanceof TabTag) {
+
+                TabTag item = (TabTag) obj;
+
+                if (item.getPath() != null && item.getPath().equals(path)) {
+
+                    return tab;
+                }
+            }
+        }
+            return null;
     }
 
     public void createNewTab(String header,  String content){

@@ -102,18 +102,27 @@ public class Controller implements IAlertListner {
 
         App.setLastPath(file.getParent());
 
-        String header = file.getName();
-        String content = fileHelper.getFileContent(file.getAbsolutePath());
+        Tab tab = view.getTabByFilePath(file.getAbsolutePath());
+
+        if (tab != null){
+
+            view.setCurrentTab(tab);
+        }
+        else {
+
+            String header = file.getName();
+            String content = fileHelper.getFileContent(file.getAbsolutePath());
 
 
-        TabTag item = new TabTag();
-        item.setWasSaved(true);
-        item.setContent(content);
-        item.setPath(file.getAbsolutePath());
-        item.setHeader(header);
+            TabTag item = new TabTag();
+            item.setWasSaved(true);
+            item.setContent(content);
+            item.setPath(file.getAbsolutePath());
+            item.setHeader(header);
 
-        view.createNewTab(header, content);
-        view.updateCurrentTab(item);
+            view.createNewTab(header, content);
+            view.updateCurrentTab(item);
+        }
     }
 
     private void closeApplication() {
