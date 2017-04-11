@@ -1,11 +1,17 @@
 package com.innopolis.al_dente.models;
 
-
+/*
+*<p>Модель тэга, который ассоциирован с каждой вкладкой</p>
+ */
 public class TabTag {
 
     private boolean wasSaved;
 
     private String path;
+
+    private String header;
+
+    private String content;
 
     public String getPath() {
         return path;
@@ -21,5 +27,21 @@ public class TabTag {
 
     public void setWasSaved(boolean wasSaved) {
         this.wasSaved = wasSaved;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

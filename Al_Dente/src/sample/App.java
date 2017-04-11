@@ -31,7 +31,7 @@ public class App extends Application {
 
         Scene scene = new Scene(parent, WIDTH, HEIGHT);
 
-        MainView.getInstance().initializeTabPane(parent, scene);
+        MainView.getInstance(parent, null).initializeTabPane(scene);
 
         primaryStage.setTitle(TITLE);
         primaryStage.setScene(scene);
@@ -57,7 +57,6 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-
 
         launch(args);
     }
