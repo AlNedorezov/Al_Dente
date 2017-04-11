@@ -24,30 +24,33 @@ public class MainView {
     private static MainView instance;
     private int TEXT_AREA_INDEX = 0;
 
+    private static  Parent parent;
+
     private MainView(){}
 
-    public static MainView getInstance(){
+    public static MainView getInstance(Parent p){
 
         if (instance == null){
 
             instance = new MainView();
         }
 
+        parent = p;
         return instance;
     }
 
-    public void updateCurrentTabHeader(Parent parent, String header){
+    public void updateCurrentTabHeader(String header){
 
-        Tab tab = getCurrentTab(parent);
+        Tab tab = getCurrentTab();
 
         Label label = (Label) tab.getGraphic();
 
         label.setText(header);
     }
 
-    public void updateCurrentTabSaveState(Parent parent, boolean setUnsavedState){
+    public void updateCurrentTabSaveState(boolean setUnsavedState){
 
-        Tab tab = getCurrentTab(parent);
+        Tab tab = getCurrentTab();
 
         Label label = (Label) tab.getGraphic();
 
@@ -71,7 +74,7 @@ public class MainView {
         label.setText(header);
     }
 
-    public void initializeTabPane(Parent parent, Scene scene){
+    public void initializeTabPane(Scene scene){
 
         TabPane tabPane = (TabPane) parent.lookup("#tabPane");
         tabPane.setPrefWidth(scene.getWidth());
@@ -82,7 +85,7 @@ public class MainView {
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldTab, Tab newTab) {
 
-                setCurrentTab(parent, newTab);
+                setCurrentTab(newTab);
             }
         });
 
@@ -93,16 +96,16 @@ public class MainView {
 
                 if (keyNewTabCombination.match(e)) {
 
-                    createNewTab(parent, null, null);
+                    createNewTab(null, null);
                     e.consume();
                 }
             }
         });
     }
 
-    public String getCurrentTabContent(Parent parent){
+    public String getCurrentTabContent(){
 
-        Tab tab = getCurrentTab(parent);
+        Tab tab = getCurrentTab();
 
         String content = null;
 
@@ -115,9 +118,9 @@ public class MainView {
         return content;
     }
 
-    public TabTag getCurrentTabTag(Parent parent){
+    public TabTag getCurrentTabTag(){
 
-        Tab tab = getCurrentTab(parent);
+        Tab tab = getCurrentTab();
 
         Object obj = tab.getUserData();
 
@@ -131,13 +134,13 @@ public class MainView {
         return null;
     }
 
-    public void setCurrentTabTag(Parent parent, TabTag item){
+    public void setCurrentTabTag(TabTag item){
 
-        Tab tab = getCurrentTab(parent);
+        Tab tab = getCurrentTab();
         tab.setUserData(item);
     }
 
-    public Tab getCurrentTab(Parent parent){
+    public Tab getCurrentTab(){
 
         TabPane tabPane = (TabPane) parent.lookup("#tabPane");
 
@@ -148,7 +151,7 @@ public class MainView {
         return tab;
     }
 
-    private void setCurrentTab(Parent parent, Tab tab ){
+    private void setCurrentTab(Tab tab ){
 
         TabPane tabPane = (TabPane) parent.lookup("#tabPane");
 
@@ -157,20 +160,7 @@ public class MainView {
         selectionModel.select(tab);
     }
 
-    public void updateCurrentTabContent(Parent parent, String content) {
-
-        Tab tab = getCurrentTab(parent);
-
-        TabTag item = getCurrentTabTag(parent);
-
-        item.setContent(content);
-
-        tab.setUserData(item);
-
-        updateCurrentTabSaveState(parent, false);
-    }
-
-    public void createNewTab(Parent parent, String header,  String content){
+    public void createNewTab(String header,  String content){
 
         TabPane tabPane = (TabPane) parent.lookup("#tabPane");
         int count =  tabPane.getTabs().size();
@@ -213,7 +203,7 @@ public class MainView {
 
         tab.setContent(hbox);
 
-        setCurrentTab(parent, tab);
+        setCurrentTab(tab);
 
         tab.setClosable(true);
 
@@ -247,9 +237,7 @@ public class MainView {
             @Override
             public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
 
-                final Parent p = App.getParent();
-
-                TabTag item =  getCurrentTabTag(p);
+                TabTag item =  getCurrentTabTag();
 
                 if (item != null) {
 
@@ -262,10 +250,10 @@ public class MainView {
 
                         if (!newText.equals(oldText)) {
 
-                            updateCurrentTabSaveState(p, true);
+                            updateCurrentTabSaveState(true);
                         } else {
 
-                            updateCurrentTabSaveState(p, false);
+                            updateCurrentTabSaveState(false);
                         }
                     }
                 }

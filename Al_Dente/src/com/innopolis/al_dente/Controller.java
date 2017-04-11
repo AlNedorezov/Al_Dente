@@ -23,7 +23,7 @@ public class Controller {
 
     public void handleAboutAction(ActionEvent event) {
 
-        MainView view = MainView.getInstance();
+        MainView view = MainView.getInstance(App.getParent());
         FileHelper fileHelper = FileHelper.getInstance();
 
         Object obj = event.getSource();
@@ -37,7 +37,7 @@ public class Controller {
 
                 case MENU_NEW_FILE :{
 
-                    view.createNewTab(App.getParent(), null, null);
+                    view.createNewTab(null, null);
                 }break;
                 case OPEN_FILE :{
 
@@ -95,8 +95,8 @@ public class Controller {
         item.setPath(file.getAbsolutePath());
         item.setHeader(header);
 
-        view.createNewTab(App.getParent(), header, content);
-        view.setCurrentTabTag(App.getParent(), item);
+        view.createNewTab(header, content);
+        view.setCurrentTabTag(item);
     }
 
     private void closeApplication() {
@@ -107,7 +107,7 @@ public class Controller {
 
     private void saveFile(Parent parent, MainView view, FileHelper fileHelper){
 
-        TabTag item = view.getCurrentTabTag(parent);
+        TabTag item = view.getCurrentTabTag();
 
         if (item == null || !item.wasSaved()){
 
@@ -116,20 +116,20 @@ public class Controller {
         }
         else  {
 
-            String content = view.getCurrentTabContent(parent);
+            String content = view.getCurrentTabContent();
 
             fileHelper.updateFile(item.getPath(), content);
             item.setContent(content);
 
-            view.setCurrentTabTag(parent, item);
-            view.updateCurrentTabSaveState(parent, false);
+            view.setCurrentTabTag(item);
+            view.updateCurrentTabSaveState(false);
         }
     }
 
     private void saveFileAs(Parent parent, MainView view, FileHelper fileHelper){
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(SAVE_FILE_AS);
+        fileChooser.setTitle(FILE_SAVE_FILE_AS);
 
         String lastPath = App.getLastPath();
 
@@ -149,7 +149,7 @@ public class Controller {
         App.setLastPath(file.getParent());
 
         String header = file.getName();
-        String content = view.getCurrentTabContent(App.getParent());
+        String content = view.getCurrentTabContent();
 
         TabTag item = new TabTag();
         item.setWasSaved(true);
@@ -157,18 +157,18 @@ public class Controller {
         item.setHeader(header);
         item.setContent(content);
 
-        TabTag tabTag = view.getCurrentTabTag(parent);
+        TabTag tabTag = view.getCurrentTabTag();
 
         if (tabTag == null || !tabTag.wasSaved()) {
 
-            view.updateCurrentTabHeader(App.getParent(), header);
+            view.updateCurrentTabHeader( header);
         }
         else {
 
-            view.createNewTab(App.getParent(), header, content );
+            view.createNewTab(header, content );
         }
 
-        view.setCurrentTabTag(App.getParent(), item);
+        view.setCurrentTabTag(item);
         fileHelper.createNewFile(file.getAbsolutePath(), content);
     }
 }
