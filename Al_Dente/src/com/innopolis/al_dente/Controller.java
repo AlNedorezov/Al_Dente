@@ -40,19 +40,27 @@ public class Controller implements IAlertListner {
                 case MENU_NEW_FILE :{
 
                     view.createNewTab(null, null);
+                    TabTag item = new TabTag();
+                    view.updateCurrentTab(item);
                 }break;
                 case OPEN_FILE :{
 
-                   openFile(view, fileHelper);
+                    openFile(view, fileHelper);
                 }break;
                 case SAVE_FILE :{
 
-                    saveFile(App.getParent(), view, fileHelper);
+                    if (view.hasTabs()) {
+
+                        saveFile(App.getParent(), view, fileHelper);
+                    }
                 }break;
 
                 case SAVE_FILE_AS :{
 
-                    saveFileAs(App.getParent(), view, fileHelper);
+                    if (view.hasTabs()) {
+                        
+                        saveFileAs(App.getParent(), view, fileHelper);
+                    }
                 }break;
 
                 case EXIT: {
@@ -148,6 +156,8 @@ public class Controller implements IAlertListner {
 
         File file = fileChooser.showSaveDialog(App.getPrimaryStage());
 
+        if (file == null) { return; }
+
         App.setLastPath(file.getParent());
 
         String header = file.getName();
@@ -176,10 +186,30 @@ public class Controller implements IAlertListner {
 
     @Override
     public void onConfirm(Tab tab) {
+
         MainView view = MainView.getInstance(App.getParent(), this);
         FileHelper fileHelper = FileHelper.getInstance();
 
-        saveFileAs(App.getParent(), view, fileHelper );
+        Object obj = tab.getUserData();
+
+        if (obj != null && obj instanceof TabTag){
+
+            TabTag item = (TabTag) obj;
+
+            if (item.wasSaved()){
+
+                saveFile(App.getParent(), view, fileHelper);
+            }
+            else {
+
+                saveFileAs(App.getParent(), view, fileHelper );
+            }
+        }
+        else {
+
+            saveFileAs(App.getParent(), view, fileHelper );
+        }
+
         view.closeTab(tab);
     }
 

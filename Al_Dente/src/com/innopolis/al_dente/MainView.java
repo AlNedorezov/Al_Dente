@@ -68,6 +68,8 @@ public class MainView {
                 if (keyNewTabCombination.match(e)) {
 
                     createNewTab(null, null);
+                    TabTag item = new TabTag();
+                    updateCurrentTab(item);
                     e.consume();
                 }
             }
@@ -113,6 +115,43 @@ public class MainView {
         }
 
         label.setText(header);
+    }
+
+    public boolean isTabWasChanged(Tab tab){
+
+        Object object = tab.getUserData();
+
+        Label label = (Label) tab.getGraphic();
+
+        String header = label.getText();
+
+        HBox hbox = (HBox) tab.getContent();
+
+        TextArea textArea = (TextArea) hbox.getChildren().get(TEXT_AREA_INDEX);
+
+        String content =  textArea.getText();
+
+        if (object != null && object instanceof TabTag){
+
+            TabTag item = (TabTag) object;
+
+            if (!item.wasSaved() && content != null && !content.isEmpty()){
+
+                return true;
+            }
+            else if (item.wasSaved() && header.contains(UNSAVED_STATE)) {
+
+                return true;
+            }
+            else {
+
+                return false;
+            }
+        }
+        else {
+
+            return false;
+        }
     }
 
     public String getCurrentTabContent(){
@@ -213,7 +252,7 @@ public class MainView {
         setTextAreaListner(textArea, tabPane, tab);
     }
 
-    private void createAlertConfirm(TabPane tabPane, Tab tab){
+    private void createAlertConfirm(Tab tab){
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Save Changes?");
@@ -236,7 +275,32 @@ public class MainView {
         tabPane.getTabs().remove(tab);
     }
 
+    private void checkTabChangeState(Tab tab){
 
+        if (isTabWasChanged(tab)){
+
+            createAlertConfirm(tab);
+        }
+        else {
+
+            closeTab(tab);
+        }
+    }
+
+
+    public boolean hasTabs(){
+
+        TabPane tabPane = (TabPane) parent.lookup("#tabPane");
+
+        if (tabPane.getTabs() == null || tabPane.getTabs().size() == 0 ){
+
+            return false;
+        }
+        else {
+
+            return true;
+        }
+    }
     //--LISTNERS
 
     private void setTextAreaListner(TextArea textArea, TabPane tabPane, Tab tab){
@@ -278,7 +342,7 @@ public class MainView {
 
                 if (keyCloseTabCombination.match(e)) {
 
-                    closeTab(tab);
+                    checkTabChangeState(tab);
                     e.consume();
                 }
             }
@@ -293,8 +357,7 @@ public class MainView {
 
                 if (event.getButton() == MouseButton.MIDDLE) {
 
-                    //closeTab(tabPane, tab);
-                    createAlertConfirm(tabPane, tab);
+                    checkTabChangeState(tab);
                 }
             }
         });
