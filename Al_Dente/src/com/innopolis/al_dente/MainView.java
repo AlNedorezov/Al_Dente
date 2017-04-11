@@ -2,6 +2,7 @@ package com.innopolis.al_dente;
 
 
 import com.innopolis.al_dente.models.TabTag;
+import com.sun.javafx.font.freetype.HBGlyphLayout;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -112,13 +113,11 @@ public class MainView {
 
         Tab tab = getCurrentTab();
 
-        String content = null;
-
         HBox hbox = (HBox) tab.getContent();
 
         TextArea textArea = (TextArea) hbox.getChildren().get(TEXT_AREA_INDEX);
 
-        content =  textArea.getText();
+        String content =  textArea.getText();
 
         return content;
     }
@@ -164,7 +163,6 @@ public class MainView {
         TabPane tabPane = (TabPane) parent.lookup("#tabPane");
         int count =  tabPane.getTabs().size();
 
-
         if (count >= MAX_TABS_COUNT){
 
             return;
@@ -182,55 +180,41 @@ public class MainView {
 
         count++;
 
-        HBox hbox = new HBox();
-
-        Tab tab = new Tab();
-        tab.setId(String.valueOf(count));
-
+        final HBox hbox = new HBox();
         final Label label = new Label(header);
-
-        tab.setGraphic(label);
-
 
         TextArea textArea = new TextArea(content);
         textArea.prefWidthProperty().bind(tabPane.widthProperty());
         textArea.prefHeightProperty().bind(tabPane.heightProperty());
 
-
         hbox.getChildren().add(textArea);
         hbox.setAlignment(Pos.CENTER);
 
+        Tab tab = new Tab();
+        tab.setId(String.valueOf(count));
+        tab.setGraphic(label);
         tab.setContent(hbox);
-
-        setCurrentTab(tab);
-
         tab.setClosable(true);
 
         tabPane.getTabs().add(tab);
 
-        label.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
+        setCurrentTab(tab);
+        
+        setLabelListners(label, tabPane, tab);
 
-                if (event.getButton() == MouseButton.MIDDLE) {
+        setHBoxListners(hbox, tabPane, tab);
 
-                    closeTab(tabPane, tab);
-                }
-            }
-        });
+        setTextAreaListner(textArea, tabPane, tab);
+    }
 
-        hbox.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()  {
+    private void closeTab(TabPane tabPane, Tab tab) {
 
-            @Override
-            public void handle(KeyEvent e) {
+        tabPane.getTabs().remove(tab);
+    }
 
-                if (keyCloseTabCombination.match(e)) {
+    //--LISTNERS
 
-                    closeTab(tabPane, tab);
-                    e.consume();
-                }
-            }
-        });
+    private void setTextAreaListner(TextArea textArea, TabPane tabPane, Tab tab){
 
         textArea.textProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -260,8 +244,33 @@ public class MainView {
         });
     }
 
-    private void closeTab(TabPane tabPane, Tab tab) {
+    private void setHBoxListners(HBox hbox, TabPane tabPane, Tab tab){
 
-        tabPane.getTabs().remove(tab);
+        hbox.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()  {
+
+            @Override
+            public void handle(KeyEvent e) {
+
+                if (keyCloseTabCombination.match(e)) {
+
+                    closeTab(tabPane, tab);
+                    e.consume();
+                }
+            }
+        });
+    }
+
+    private void setLabelListners(Label label, TabPane tabPane, Tab tab){
+
+        label.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+                if (event.getButton() == MouseButton.MIDDLE) {
+
+                    closeTab(tabPane, tab);
+                }
+            }
+        });
     }
 }
