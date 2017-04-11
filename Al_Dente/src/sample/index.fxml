@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="800" prefWidth="700" xmlns="http://javafx.com/javafx/8.0.101" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.innopolis.al_dente.Controller">
+
+    <AnchorPane>
+        <MenuBar prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem fx:id="menu_new_file" mnemonicParsing="false" onAction="#handleAboutAction" text="New File" />
+                        <MenuItem fx:id="open_file" mnemonicParsing="false" onAction="#handleAboutAction" text="Open File" />
+                        <MenuItem fx:id="save_file" mnemonicParsing="false" onAction="#handleAboutAction" text="Save File" />
+                        <MenuItem fx:id="save_file_as" mnemonicParsing="false" onAction="#handleAboutAction" text="Save File As" />
+                        <MenuItem fx:id="exit" mnemonicParsing="false" onAction="#handleAboutAction" text="Exit" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </AnchorPane>
+
+    <TabPane fx:id="tabPane" prefHeight="200" prefWidth="200" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+            <!--<Tab text="Untitled Tab 1">-->
+                <!--<content>-->
+                    <!--<AnchorPane>-->
+                        <!--<children>-->
+                            <!--<TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" />-->
+                        <!--</children>-->
+                    <!--</AnchorPane>-->
+                <!--</content>-->
+            <!--</Tab>-->
+
+        </tabs>
+    </TabPane>
+
+</VBox>
