@@ -5,7 +5,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
 import javafx.stage.FileChooser;
 import sample.App;
 
@@ -18,6 +17,9 @@ public class Controller {
     private static final String SAVE_FILE_AS = "save_file_as";
     private static final String OPEN_FILE = "open_file";
     private static final String EXIT = "exit";
+
+    private static final String FILE_CHOOSER_OPEN_FILE = "Open text file";
+    private static final String FILE_SAVE_FILE_AS = "Save File As";
 
     public void handleAboutAction(ActionEvent event) {
 
@@ -62,7 +64,7 @@ public class Controller {
     private void openFile(MainView view, FileHelper fileHelper) {
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open text file");
+        fileChooser.setTitle(FILE_CHOOSER_OPEN_FILE);
 
         String lastPath = App.getLastPath();
 
@@ -81,13 +83,11 @@ public class Controller {
 
         if (file == null) { return; }
 
-        String header = file.getName();
-
         App.setLastPath(file.getParent());
 
+        String header = file.getName();
         String content = fileHelper.getFileContent(file.getAbsolutePath());
 
-        view.createNewTab(App.getParent(), header, content);
 
         TabTag item = new TabTag();
         item.setWasSaved(true);
@@ -95,6 +95,7 @@ public class Controller {
         item.setPath(file.getAbsolutePath());
         item.setHeader(header);
 
+        view.createNewTab(App.getParent(), header, content);
         view.setCurrentTabTag(App.getParent(), item);
     }
 
@@ -116,15 +117,19 @@ public class Controller {
         else  {
 
             String content = view.getCurrentTabContent(parent);
+
             fileHelper.updateFile(item.getPath(), content);
-            view.updateCurrentTabContent(App.getParent(), content);
+            item.setContent(content);
+
+            view.setCurrentTabTag(parent, item);
+            view.updateCurrentTabSaveState(parent, false);
         }
     }
 
     private void saveFileAs(Parent parent, MainView view, FileHelper fileHelper){
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save File As");
+        fileChooser.setTitle(SAVE_FILE_AS);
 
         String lastPath = App.getLastPath();
 
@@ -141,10 +146,9 @@ public class Controller {
 
         File file = fileChooser.showSaveDialog(App.getPrimaryStage());
 
-        String header = file.getName();
-
         App.setLastPath(file.getParent());
 
+        String header = file.getName();
         String content = view.getCurrentTabContent(App.getParent());
 
         TabTag item = new TabTag();
@@ -158,14 +162,13 @@ public class Controller {
         if (tabTag == null || !tabTag.wasSaved()) {
 
             view.updateCurrentTabHeader(App.getParent(), header);
-            view.setCurrentTabTag(App.getParent(), item);
         }
         else {
 
             view.createNewTab(App.getParent(), header, content );
-            view.setCurrentTabTag(App.getParent(), item);
         }
 
+        view.setCurrentTabTag(App.getParent(), item);
         fileHelper.createNewFile(file.getAbsolutePath(), content);
     }
 }
