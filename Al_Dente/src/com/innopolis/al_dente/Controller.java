@@ -79,6 +79,8 @@ public class Controller {
 
         File file = fileChooser.showOpenDialog(App.getPrimaryStage());
 
+        if (file == null) { return; }
+
         String header = file.getName();
 
         App.setLastPath(file.getParent());
@@ -87,8 +89,13 @@ public class Controller {
 
         view.createNewTab(App.getParent(), header, content);
 
+        TabTag item = new TabTag();
+        item.setWasSaved(true);
+        item.setContent(content);
+        item.setPath(file.getAbsolutePath());
+        item.setHeader(header);
 
-
+        view.setCurrentTabTag(App.getParent(), item);
     }
 
     private void closeApplication() {
@@ -110,6 +117,7 @@ public class Controller {
 
             String content = view.getCurrentTabContent(parent);
             fileHelper.updateFile(item.getPath(), content);
+            view.updateCurrentTabContent(App.getParent(), content);
         }
     }
 
@@ -142,6 +150,8 @@ public class Controller {
         TabTag item = new TabTag();
         item.setWasSaved(true);
         item.setPath(file.getAbsolutePath());
+        item.setHeader(header);
+        item.setContent(content);
 
         TabTag tabTag = view.getCurrentTabTag(parent);
 

@@ -11,10 +11,12 @@ import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.event.EventHandler;
+import sample.App;
 
 public class MainView {
 
     private static final String DEFAULT_NAME = "Untitled";
+    private static final String UNSAVED_STATE = "(*)";
     private static final int MAX_TABS_COUNT = 20;
     final KeyCombination keyCloseTabCombination = new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN);
     final KeyCombination keyNewTabCombination = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
@@ -39,6 +41,32 @@ public class MainView {
         Tab tab = getCurrentTab(parent);
 
         Label label = (Label) tab.getGraphic();
+
+        label.setText(header);
+    }
+
+    public void updateCurrentTabSaveState(Parent parent, boolean setUnsavedState){
+
+        Tab tab = getCurrentTab(parent);
+
+        Label label = (Label) tab.getGraphic();
+
+        String header = label.getText();
+
+        if (setUnsavedState){
+
+            if ( !header.contains(UNSAVED_STATE)){
+
+                header += UNSAVED_STATE;
+            }
+        }
+        else {
+
+            if ( header.contains(UNSAVED_STATE)){
+
+                header = header.replace(UNSAVED_STATE, "");
+            }
+        }
 
         label.setText(header);
     }
@@ -129,6 +157,19 @@ public class MainView {
         selectionModel.select(tab);
     }
 
+    public void updateCurrentTabContent(Parent parent, String content) {
+
+        Tab tab = getCurrentTab(parent);
+
+        TabTag item = getCurrentTabTag(parent);
+
+        item.setContent(content);
+
+        tab.setUserData(item);
+
+        updateCurrentTabSaveState(parent, false);
+    }
+
     public void createNewTab(Parent parent, String header,  String content){
 
         TabPane tabPane = (TabPane) parent.lookup("#tabPane");
@@ -198,6 +239,35 @@ public class MainView {
 
                     closeTab(tabPane, tab);
                     e.consume();
+                }
+            }
+        });
+
+        textArea.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+
+                final Parent p = App.getParent();
+
+                TabTag item =  getCurrentTabTag(p);
+
+                if (item != null) {
+
+                    String newText = textArea.getText();
+                    String oldText = item.getContent();
+
+                    boolean isTabSaved = item.wasSaved();
+
+                    if (isTabSaved) {
+
+                        if (!newText.equals(oldText)) {
+
+                            updateCurrentTabSaveState(p, true);
+                        } else {
+
+                            updateCurrentTabSaveState(p, false);
+                        }
+                    }
                 }
             }
         });
