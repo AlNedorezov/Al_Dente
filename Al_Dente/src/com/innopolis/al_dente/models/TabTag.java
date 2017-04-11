@@ -1,6 +1,8 @@
 package com.innopolis.al_dente.models;
 
-
+/*
+*<p>Модель тэга, который ассоциирован с каждой вкладкой</p>
+ */
 public class TabTag {
 
     private boolean wasSaved;

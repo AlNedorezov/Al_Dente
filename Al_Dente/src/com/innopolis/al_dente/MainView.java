@@ -3,7 +3,6 @@ package com.innopolis.al_dente;
 
 import com.innopolis.al_dente.models.IAlertListner;
 import com.innopolis.al_dente.models.TabTag;
-import com.sun.javafx.font.freetype.HBGlyphLayout;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -49,6 +48,9 @@ public class MainView {
         return instance;
     }
 
+    /*
+    * <p>Инициализация панели вкладок. Нужно сдлать один раз при загрузке программы</p>
+     */
     public void initializeTabPane(Scene scene){
 
         TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
@@ -80,12 +82,22 @@ public class MainView {
         });
     }
 
+
+    /*
+    * <p>Обновляет тэг, привязанный к текущей открытой вкладке</p>
+    * @param item тэг, информацию в котором нужно обновить
+     */
     public void updateCurrentTab(TabTag item){
 
         Tab tab = getCurrentTab();
         tab.setUserData(item);
     }
 
+
+    /*
+    * <p>Так как часто используемый вынес в отдельный метод. У текущей вкладки просто обновляет заголовок</p>
+    * @param header новый заголовок
+     */
     public void updateCurrentTabHeader(String header){
 
         Tab tab = getCurrentTab();
@@ -95,6 +107,11 @@ public class MainView {
         label.setText(header);
     }
 
+
+    /*
+    * <p>Так как часто используемый вынес в отдельный метод. У текущей вкладки просто обновляет состояние - внесли ли несохраннёные изменения или нет</p>
+    * @param setUnsavedState были ли внесены в текстовое поле несохраннёные изменения
+     */
     public void updateCurrentTabSaveState(boolean setUnsavedState){
 
         Tab tab = getCurrentTab();
@@ -121,6 +138,11 @@ public class MainView {
         label.setText(header);
     }
 
+
+    /*
+    * <p>Проверяет были ли внесены в текущую вкладку какие либо изменения. Работает для уже сохранённых и ещё не сохранённых файлов</p>
+    * @param tab вкладка, которую нужно проверить
+     */
     public boolean isTabWasChanged(Tab tab){
 
         Object object = tab.getUserData();
@@ -158,6 +180,10 @@ public class MainView {
         }
     }
 
+
+    /*
+    * <p>Так как часто используемый вынес в отдельный метод. У текущей вкладки просто получаем содержимое текстового поля</p>
+     */
     public String getCurrentTabContent(){
 
         Tab tab = getCurrentTab();
@@ -171,6 +197,11 @@ public class MainView {
         return content;
     }
 
+
+    /*
+    * <p>У текущей вкладки получаем тэг</p>
+    *  @return тэг текущей вкладки
+     */
     public TabTag getCurrentTabTag(){
 
         Tab tab = getCurrentTab();
@@ -187,6 +218,11 @@ public class MainView {
         return null;
     }
 
+
+    /*
+    * <p>Получение текущей вкладки</p>
+    *  @return текущая влкадка
+     */
     public Tab getCurrentTab(){
 
         TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
@@ -198,6 +234,11 @@ public class MainView {
         return tab;
     }
 
+
+    /*
+    * <p>Установка текущей влкадки</p>
+    * @param tab текущая вкладка
+     */
     public void setCurrentTab(Tab tab ){
 
         TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
@@ -207,6 +248,12 @@ public class MainView {
         selectionModel.select(tab);
     }
 
+
+    /*
+    * <p>Получение вкладки, которая содержит в себе содержиое файла</p>
+    * @param path путь к файлу
+    * @return вкладка которая соответствует условию или null
+     */
     public Tab getTabByFilePath(String path){
 
         TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
@@ -228,6 +275,13 @@ public class MainView {
             return null;
     }
 
+
+    /*
+    * <p>Создание новой вкладки</p>
+    * @param header заголовок
+    * @param content содержимое
+    * <p>Если пользователь просто создаёт вкладку а не открывает какой то файл, то входные параметры null</p>
+     */
     public void createNewTab(String header,  String content){
 
         TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
@@ -277,6 +331,11 @@ public class MainView {
         setTextAreaListner(textArea, tabPane, tab);
     }
 
+
+    /*
+    * <p>Создаёт messagebox который показывается если в файл внесены несохранённые изменения</p>
+    * @param tab вкладка, которую нужно закрыть
+     */
     private void createAlertConfirm(Tab tab){
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -294,12 +353,23 @@ public class MainView {
         }
     }
 
+
+    /*
+    * <p>Закрытие вкладки</p>
+    * @param tab вкладка, которую нужно закрыть
+     */
     public void closeTab(Tab tab) {
 
         TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
         tabPane.getTabs().remove(tab);
     }
 
+
+    /*
+    * <p>Проверка были ли внесены во вкладку несохранённые изменения.</p>
+    * <p>Если да, то открывается диалоговое окно. Если нет но влкдака просто закрывается</p>
+    * @param tab вкладка, которую нужно закрыть
+     */
     private void checkTabChangeState(Tab tab){
 
         if (isTabWasChanged(tab)){
@@ -313,6 +383,11 @@ public class MainView {
         }
     }
 
+
+    /*
+    * <p>Проверка имеет ли сейчас панель вкладок хотя бы одну открытую вкладку</p>
+    * @return есть ли открытые вкладки
+     */
     public boolean hasTabs(){
 
         TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
@@ -328,6 +403,10 @@ public class MainView {
     }
     //--LISTNERS
 
+    /*
+    * <p>Обработчик событий - текстовое поле.</p>
+    * <p>Здесь происходит процесс отслеживания изменений в текстовом поле</p>
+     */
     private void setTextAreaListner(TextArea textArea, TabPane tabPane, Tab tab){
 
         textArea.textProperty().addListener(new ChangeListener<String>() {
@@ -358,6 +437,11 @@ public class MainView {
         });
     }
 
+
+    /*
+    * <p>Обработчик событий нажатия клавиш</p>
+    * <p>Закрытие текущей влкадки</p>
+     */
     private void setHBoxListners(HBox hbox, TabPane tabPane, Tab tab){
 
         hbox.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>()  {
@@ -374,6 +458,11 @@ public class MainView {
         });
     }
 
+
+    /*
+    * <p>Обработчик событий - заголовок вкладки</p>
+    * <p>Нажатие колёсиком мыши на заголовок вкладки - закрытие.</p>
+     */
     private void setLabelListners(Label label, TabPane tabPane, Tab tab){
 
         label.setOnMouseClicked(new EventHandler<MouseEvent>() {

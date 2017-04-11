@@ -31,6 +31,9 @@ public class Controller implements IAlertListner {
          view = MainView.getInstance(App.getParent(), this);
     }
 
+    /*
+    <p>Обработчик событий нажатия на элементы панели меню</p>
+     */
     public void handleAboutAction(ActionEvent event) {
 
         FileHelper fileHelper = FileHelper.getInstance();
