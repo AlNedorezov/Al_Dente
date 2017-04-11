@@ -4,6 +4,7 @@ import com.innopolis.al_dente.models.IAlertListner;
 import com.innopolis.al_dente.models.TabTag;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
@@ -22,10 +23,16 @@ public class Controller implements IAlertListner {
 
     private static final String FILE_CHOOSER_OPEN_FILE = "Open text file";
     private static final String FILE_SAVE_FILE_AS = "Save File As";
+    private  MainView view;
+
+    @FXML
+    public void initialize(){
+
+         view = MainView.getInstance(App.getParent(), this);
+    }
 
     public void handleAboutAction(ActionEvent event) {
 
-        MainView view = MainView.getInstance(App.getParent(), this);
         FileHelper fileHelper = FileHelper.getInstance();
 
         Object obj = event.getSource();
@@ -187,7 +194,6 @@ public class Controller implements IAlertListner {
     @Override
     public void onConfirm(Tab tab) {
 
-        MainView view = MainView.getInstance(App.getParent(), this);
         FileHelper fileHelper = FileHelper.getInstance();
 
         Object obj = tab.getUserData();
@@ -216,7 +222,6 @@ public class Controller implements IAlertListner {
     @Override
     public void onCancel(Tab tab) {
 
-        MainView view = MainView.getInstance(App.getParent(), this);
         view.closeTab(tab);
     }
 }

@@ -41,7 +41,10 @@ public class MainView {
         }
 
         parent = p;
-        alertListner = listner;
+        if (listner != null) {
+
+            alertListner = listner;
+        }
 
         return instance;
     }
@@ -280,6 +283,7 @@ public class MainView {
 
         if (isTabWasChanged(tab)){
 
+            setCurrentTab(tab);
             createAlertConfirm(tab);
         }
         else {
