@@ -94,7 +94,7 @@
                   </HBox.margin></Label>
                     <Label fx:id="line_number" text="20:30">
                   <HBox.margin>
-                     <Insets left="700.0" />
+                     <Insets left="20.0" />
                   </HBox.margin></Label>
                 </children>
                 <VBox.margin>

@@ -37,5 +37,4 @@ public interface IMainController {
   */
     void removeTemporaryFile(String header, String path);
 
-    void searchText(String text);
 }

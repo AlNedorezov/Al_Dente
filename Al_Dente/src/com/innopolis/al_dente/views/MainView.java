@@ -12,12 +12,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import sample.App;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainView {
 //временный файл
@@ -36,6 +37,7 @@ public class MainView {
 
     private static final String TAB_PANE_ID = "#tabPane";
     private static final String VB_MAIN_CONTAINER_ID = "#vb_main_container";
+    private static final String LABEL_MATCHED_COUNT_ID = "#search_count";
 
     private static  Parent parent;
 
@@ -528,7 +530,18 @@ public class MainView {
             @Override
             public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
 
-                iMainController.searchText(newValue);
+               search(newValue);
+            }
+        });
+
+        tvSearch.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ENTER)  {
+                    String text = tvSearch.getText();
+
+                   search(text);
+                }
             }
         });
     }
@@ -541,9 +554,34 @@ public class MainView {
 
         int start = content.indexOf(text);
 
-        if (start < 0) {return;}
+        if (start < 0) {
+
+            textArea.selectRange(0,0);
+
+            clearMatherCount(text);
+
+            return;
+        }
 
         textArea.selectRange(start, start + text.length());
 
+        int count = 0;
+        Pattern p = Pattern.compile(text, Pattern.UNICODE_CASE|Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(content);
+        while(m.find()) { count++; }
+
+        displayMatchedCount(1, count);
+    }
+
+    private void clearMatherCount(String text) {
+
+        Label labelCount  = (Label) parent.lookup(LABEL_MATCHED_COUNT_ID);
+        labelCount.setText("Unable to find " + text);
+    }
+
+    private void displayMatchedCount(int position, int count){
+
+        Label labelCount  = (Label) parent.lookup(LABEL_MATCHED_COUNT_ID);
+        labelCount.setText(String.format("%d of %d matches", position, count));
     }
 }

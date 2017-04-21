@@ -280,9 +280,4 @@ public class MainController implements IMainController {
         fileHelper.removeTemporaryFile(header, path);
     }
 
-    @Override
-    public void searchText(String text) {
-
-        view.search(text);
-    }
 }
