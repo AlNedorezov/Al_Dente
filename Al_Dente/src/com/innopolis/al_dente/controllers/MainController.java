@@ -79,13 +79,22 @@ public class MainController implements IMainController {
 
                 case SEARCH :{
 
-                    view.createSearchDialog();
+                    if (view.hasTabs()) {
 
-                    /*if (view.hasTabs()) {
-
-                        vi
-                    }*/
+                        view.hideSearchReplaceDialog();
+                        view.createSearchDialog();
+                    }
                 }break;
+
+                case REPLACE :{
+
+                    if (view.hasTabs()) {
+
+                        view.hideSearchReplaceDialog();
+                        view.createReplaceDialog();
+                    }
+                }break;
+
 
 
                 case EXIT: {
@@ -252,6 +261,7 @@ public class MainController implements IMainController {
     public void onCancel(Tab tab) {
 
         view.closeTab(tab);
+        chechRemoveTemporaryFile(tab);
     }
 
     @Override
@@ -264,6 +274,22 @@ public class MainController implements IMainController {
     public void closeTab(Tab tab) {
 
         view.closeTab(tab);
+       chechRemoveTemporaryFile(tab);
+    }
+
+    private void chechRemoveTemporaryFile(Tab tab) {
+
+        Object object = tab.getUserData();
+
+        if (object != null && object instanceof TabTag) {
+
+            TabTag item = (TabTag) object;
+
+            if ( item.wasSaved()) {
+
+                removeTemporaryFile(item.getHeader(), item.getPath());
+            }
+        }
     }
 
     @Override
