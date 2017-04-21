@@ -732,8 +732,8 @@ public class MainView {
 
         Label labelReplace= new Label("Replace");
         TextField tvReplace = new TextField();
-        Button btnReplace = new Button("Replace");
-        tvReplace.setPrefWidth(App.WIDTH - labelReplace.getWidth() - btnReplace.getWidth() - 140);
+        Button btnReplace = new Button("Replace All");
+        tvReplace.setPrefWidth(App.WIDTH - labelReplace.getWidth() - btnReplace.getWidth() - 150);
 
         replaceContainer.getChildren().addAll(labelReplace, tvReplace, btnReplace);
 
