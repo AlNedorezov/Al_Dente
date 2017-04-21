@@ -10,6 +10,8 @@ public class FileHelper {
 
     private static final String CHAR_SET = "utf-8";
 
+    private static final String TEMPORARY_FILE_PREFIX = "`";
+
     private static FileHelper instance;
 
     private FileHelper(){}
@@ -33,9 +35,17 @@ public class FileHelper {
             try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(path), CHAR_SET))) {
 
-                for (String str : lines){
+                for (int i = 0; i < lines.length; i++){
 
-                    writer.write(str + newLine);
+                    String str = lines[i];
+                    if (i == lines.length - 1) {
+                        
+                        writer.write(str);
+                    }
+                    else{
+
+                        writer.write(str + newLine);
+                    }
                 }
 
             } catch (UnsupportedEncodingException e) {
@@ -51,6 +61,19 @@ public class FileHelper {
 
         deleteFile(path);
         createNewFile(path, content);
+    }
+
+    public void fillTemporaryFile (String header, String path, String content){
+
+        path = path.replace(header, TEMPORARY_FILE_PREFIX + header); //update path to temporary file path
+        deleteFile(path); //delete of exists
+        createNewFile(path, content);
+    }
+
+    public void removeTemporaryFile (String header, String path){
+
+        path = path.replace(header, TEMPORARY_FILE_PREFIX + header); //update path to temporary file path
+        deleteFile(path); //delete of exists
     }
 
     public boolean deleteFile(String path){

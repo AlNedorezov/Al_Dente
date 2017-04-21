@@ -76,7 +76,7 @@ public class MainView {
                 if (keyNewTabCombination.match(e)) {
 
                     //модель не нужна перенести в контроллер
-                    createNewTab(null, null);
+                    iMainController.createNewTab(null, null);
                     TabTag item = new TabTag();
                     updateCurrentTab(item);
                     e.consume();
@@ -382,7 +382,7 @@ public class MainView {
         }
         else {
 
-            closeTab(tab);
+            iMainController.closeTab(tab);
         }
     }
 
@@ -430,9 +430,11 @@ public class MainView {
                         if (!newText.equals(oldText)) {
 
                             updateCurrentTabSaveState(true);
+                            iMainController.fillTemporaryFile(item.getHeader(), item.getPath(), newText);
                         } else {
 
                             updateCurrentTabSaveState(false);
+                            iMainController.removeTemporaryFile(item.getHeader(), item.getPath());
                         }
                     }
                 }

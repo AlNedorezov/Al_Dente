@@ -51,7 +51,7 @@ public class MainController implements IMainController {
 
                 case MENU_NEW_FILE :{
 
-                    view.createNewTab(null, null);
+                    createNewTab(null, null);
                     TabTag item = new TabTag();
                     view.updateCurrentTab(item);
                 }break;
@@ -125,7 +125,7 @@ public class MainController implements IMainController {
             item.setPath(file.getAbsolutePath());
             item.setHeader(header);
 
-            view.createNewTab(header, content);
+            createNewTab(header, content);
             view.updateCurrentTab(item);
         }
     }
@@ -154,6 +154,8 @@ public class MainController implements IMainController {
 
             view.updateCurrentTab(item);
             view.updateCurrentTabSaveState(false);
+
+            removeTemporaryFile(item.getHeader(), item.getPath());
         }
     }
 
@@ -237,5 +239,31 @@ public class MainController implements IMainController {
     public void onCancel(Tab tab) {
 
         view.closeTab(tab);
+    }
+
+    @Override
+    public void createNewTab(String header, String content) {
+
+        view.createNewTab(header, content);
+    }
+
+    @Override
+    public void closeTab(Tab tab) {
+
+        view.closeTab(tab);
+    }
+
+    @Override
+    public void fillTemporaryFile(String header, String path, String content) {
+
+        FileHelper fileHelper = FileHelper.getInstance();
+        fileHelper.fillTemporaryFile(header, path, content);
+    }
+
+    @Override
+    public void removeTemporaryFile(String header, String path) {
+
+        FileHelper fileHelper = FileHelper.getInstance();
+        fileHelper.removeTemporaryFile(header, path);
     }
 }
