@@ -6,12 +6,16 @@ import com.innopolis.al_dente.models.TabTag;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import sample.App;
 
 import java.util.Optional;
 
@@ -20,7 +24,7 @@ public class MainView {
     // перекинуть в контроллер
     //сделать панель для поиска и заменны ( и для коунтов)
     private static final String DEFAULT_NAME = "Untitled";
-    private static final String TAB_PANE_ID = "#tabPane";
+
     private static final String UNSAVED_STATE = "(*)";
     private static final int MAX_TABS_COUNT = 20;
     final KeyCombination keyCloseTabCombination = new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN);
@@ -29,6 +33,9 @@ public class MainView {
 
     private static MainView instance;
     private int TEXT_AREA_INDEX = 0;
+
+    private static final String TAB_PANE_ID = "#tabPane";
+    private static final String VB_MAIN_CONTAINER_ID = "#vb_main_container";
 
     private static  Parent parent;
 
@@ -202,6 +209,21 @@ public class MainView {
 
 
     /*
+    * <p>Так как часто используемый вынес в отдельный метод. У текущей вкладки просто получаем непосредственно само текстовое поле</p>
+     */
+    public TextArea getCurrentTabTextArea(){
+
+        Tab tab = getCurrentTab();
+
+        HBox hbox = (HBox) tab.getContent();
+
+        TextArea textArea = (TextArea) hbox.getChildren().get(TEXT_AREA_INDEX);
+
+        return textArea;
+    }
+
+
+    /*
     * <p>У текущей вкладки получаем тэг</p>
     *  @return тэг текущей вкладки
      */
@@ -313,6 +335,7 @@ public class MainView {
         TextArea textArea = new TextArea(content);
         textArea.prefWidthProperty().bind(tabPane.widthProperty());
         textArea.prefHeightProperty().bind(tabPane.heightProperty());
+        textArea.setStyle("-fx-highlight-fill: lightgray; -fx-highlight-text-fill: blue; -fx-font-size: 15px;");
 
         hbox.getChildren().add(textArea);
         hbox.setAlignment(Pos.CENTER);
@@ -480,5 +503,47 @@ public class MainView {
                 }
             }
         });
+    }
+
+    public void createSearchDialog(){
+
+        VBox mainContainer  = (VBox) parent.lookup(VB_MAIN_CONTAINER_ID);
+
+        VBox fieldContainer = new VBox(); //find and replace containers
+
+        HBox searchContainer = new HBox(); //only search view
+
+        Label labelSearch = new Label("Find");
+        TextField tvSearch = new TextField();
+        tvSearch.setPrefWidth(App.WIDTH - labelSearch.getWidth() - 50);
+
+        searchContainer.getChildren().addAll(labelSearch, tvSearch);
+
+        HBox.setMargin(labelSearch, new Insets(0, 10, 0, 10));
+
+        fieldContainer.getChildren().add(searchContainer);
+        mainContainer.getChildren().add(0, fieldContainer);
+
+        tvSearch.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+
+                iMainController.searchText(newValue);
+            }
+        });
+    }
+
+    public void search(String text){
+
+        TextArea textArea = getCurrentTabTextArea();
+
+        String content = textArea.getText();
+
+        int start = content.indexOf(text);
+
+        if (start < 0) {return;}
+
+        textArea.selectRange(start, start + text.length());
+
     }
 }

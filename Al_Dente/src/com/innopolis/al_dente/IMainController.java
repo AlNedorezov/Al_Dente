@@ -27,7 +27,15 @@ public interface IMainController {
    */
     void  closeTab(Tab tab);
 
+    /*
+ <p>Создание или изменение временного файла</p>
+  */
     void fillTemporaryFile(String header, String path, String content);
 
+    /*
+ <p>Удаление временнго файла</p>
+  */
     void removeTemporaryFile(String header, String path);
+
+    void searchText(String text);
 }

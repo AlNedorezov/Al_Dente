@@ -21,6 +21,8 @@ public class MainController implements IMainController {
     private static final String SAVE_FILE = "save_file";
     private static final String SAVE_FILE_AS = "save_file_as";
     private static final String OPEN_FILE = "open_file";
+    private static final String SEARCH = "menu_search";
+    private static final String REPLACE = "menu_replace";
     private static final String EXIT = "exit";
 
     private static final String FILE_CHOOSER_OPEN_FILE = "Open text file";
@@ -74,6 +76,17 @@ public class MainController implements IMainController {
                         saveFileAs(App.getParent(), view, fileHelper);
                     }
                 }break;
+
+                case SEARCH :{
+
+                    view.createSearchDialog();
+
+                    /*if (view.hasTabs()) {
+
+                        vi
+                    }*/
+                }break;
+
 
                 case EXIT: {
 
@@ -265,5 +278,11 @@ public class MainController implements IMainController {
 
         FileHelper fileHelper = FileHelper.getInstance();
         fileHelper.removeTemporaryFile(header, path);
+    }
+
+    @Override
+    public void searchText(String text) {
+
+        view.search(text);
     }
 }

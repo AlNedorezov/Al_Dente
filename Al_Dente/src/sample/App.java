@@ -12,8 +12,8 @@ import javafx.stage.Stage;
 public class App extends Application {
 
     private static final String FILE_NAME = "index.fxml";
-    private static final int WIDTH = 800;
-    private static final int HEIGHT = 700;
+    public static final int WIDTH = 800;
+    public static final int HEIGHT = 700;
     private static final String TITLE = "Al Dente";
     public static final String DEFAULT_PATH = "user.home";
 
