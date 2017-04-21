@@ -10,7 +10,7 @@ public class FileHelper {
 
     private static final String CHAR_SET = "utf-8";
 
-    private static final String TEMPORARY_FILE_PREFIX = "`";
+    private static final String TEMPORARY_FILE_PREFIX = "~";
 
     private static FileHelper instance;
 
