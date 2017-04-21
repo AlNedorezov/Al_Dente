@@ -1,7 +1,9 @@
-package com.innopolis.al_dente;
+package com.innopolis.al_dente.controllers;
 
-import com.innopolis.al_dente.models.IAlertListner;
+import com.innopolis.al_dente.FileHelper;
+import com.innopolis.al_dente.IMainController;
 import com.innopolis.al_dente.models.TabTag;
+import com.innopolis.al_dente.views.MainView;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,7 +15,7 @@ import sample.App;
 
 import java.io.File;
 
-public class Controller implements IAlertListner {
+public class MainController implements IMainController {
 
     private static final String MENU_NEW_FILE = "menu_new_file";
     private static final String SAVE_FILE = "save_file";
@@ -23,7 +25,7 @@ public class Controller implements IAlertListner {
 
     private static final String FILE_CHOOSER_OPEN_FILE = "Open text file";
     private static final String FILE_SAVE_FILE_AS = "Save File As";
-    private  MainView view;
+    private MainView view;
 
     @FXML
     public void initialize(){

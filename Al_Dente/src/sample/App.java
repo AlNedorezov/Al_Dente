@@ -1,6 +1,6 @@
 package sample;
 
-import com.innopolis.al_dente.MainView;
+import com.innopolis.al_dente.views.MainView;
 import javafx.application.Application;
 
 import javafx.fxml.FXMLLoader;

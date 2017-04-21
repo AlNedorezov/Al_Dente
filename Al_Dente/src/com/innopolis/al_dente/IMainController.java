@@ -1,11 +1,11 @@
-package com.innopolis.al_dente.models;
+package com.innopolis.al_dente;
 
 
 import javafx.scene.control.Tab;
 /*
 *<p>Связывает controller and view - нужен для отлавливания событий нажатия на кнопки в messagebox</p>
  */
-public interface IAlertListner {
+public interface IMainController {
 
     /*
     <p>Нажал на кнопку ок в msg</p>

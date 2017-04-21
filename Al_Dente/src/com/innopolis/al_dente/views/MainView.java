@@ -1,7 +1,7 @@
-package com.innopolis.al_dente;
+package com.innopolis.al_dente.views;
 
 
-import com.innopolis.al_dente.models.IAlertListner;
+import com.innopolis.al_dente.IMainController;
 import com.innopolis.al_dente.models.TabTag;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,14 +16,16 @@ import javafx.scene.layout.HBox;
 import java.util.Optional;
 
 public class MainView {
-
+//временный файл
+    // перекинуть в контроллер
+    //сделать панель для поиска и заменны ( и для коунтов)
     private static final String DEFAULT_NAME = "Untitled";
     private static final String TAB_PANE_ID = "#tabPane";
     private static final String UNSAVED_STATE = "(*)";
     private static final int MAX_TABS_COUNT = 20;
     final KeyCombination keyCloseTabCombination = new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN);
     final KeyCombination keyNewTabCombination = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
-    private static IAlertListner alertListner;
+    private static IMainController iMainController;
 
     private static MainView instance;
     private int TEXT_AREA_INDEX = 0;
@@ -32,7 +34,7 @@ public class MainView {
 
     private MainView(){}
 
-    public static MainView getInstance(Parent p, IAlertListner listner){
+    public static MainView getInstance(Parent p, IMainController listner){
 
         if (instance == null){
 
@@ -42,7 +44,7 @@ public class MainView {
         parent = p;
         if (listner != null) {
 
-            alertListner = listner;
+            iMainController = listner;
         }
 
         return instance;
@@ -73,6 +75,7 @@ public class MainView {
 
                 if (keyNewTabCombination.match(e)) {
 
+                    //модель не нужна перенести в контроллер
                     createNewTab(null, null);
                     TabTag item = new TabTag();
                     updateCurrentTab(item);
@@ -345,11 +348,11 @@ public class MainView {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
 
-            alertListner.onConfirm(tab);
+            iMainController.onConfirm(tab);
 
         } else {
 
-            alertListner.onCancel(tab);
+            iMainController.onCancel(tab);
         }
     }
 
