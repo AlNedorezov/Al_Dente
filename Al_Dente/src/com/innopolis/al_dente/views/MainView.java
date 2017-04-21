@@ -5,22 +5,26 @@ import com.innopolis.al_dente.IMainController;
 import com.innopolis.al_dente.models.TabTag;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import sample.App;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainView {
-//временный файл
-    // перекинуть в контроллер
-    //сделать панель для поиска и заменны ( и для коунтов)
+
     private static final String DEFAULT_NAME = "Untitled";
-    private static final String TAB_PANE_ID = "#tabPane";
+
     private static final String UNSAVED_STATE = "(*)";
     private static final int MAX_TABS_COUNT = 20;
     final KeyCombination keyCloseTabCombination = new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN);
@@ -29,6 +33,10 @@ public class MainView {
 
     private static MainView instance;
     private int TEXT_AREA_INDEX = 0;
+
+    private static final String TAB_PANE_ID = "#tabPane";
+    private static final String VB_MAIN_CONTAINER_ID = "#vb_main_container";
+    private static final String LABEL_MATCHED_COUNT_ID = "#search_count";
 
     private static  Parent parent;
 
@@ -80,6 +88,16 @@ public class MainView {
                     TabTag item = new TabTag();
                     updateCurrentTab(item);
                     e.consume();
+                }
+            }
+        });
+
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ESCAPE)  {
+
+                   hideSearchReplaceDialog();
                 }
             }
         });
@@ -202,6 +220,21 @@ public class MainView {
 
 
     /*
+    * <p>Так как часто используемый вынес в отдельный метод. У текущей вкладки просто получаем непосредственно само текстовое поле</p>
+     */
+    public TextArea getCurrentTabTextArea(){
+
+        Tab tab = getCurrentTab();
+
+        HBox hbox = (HBox) tab.getContent();
+
+        TextArea textArea = (TextArea) hbox.getChildren().get(TEXT_AREA_INDEX);
+
+        return textArea;
+    }
+
+
+    /*
     * <p>У текущей вкладки получаем тэг</p>
     *  @return тэг текущей вкладки
      */
@@ -313,6 +346,7 @@ public class MainView {
         TextArea textArea = new TextArea(content);
         textArea.prefWidthProperty().bind(tabPane.widthProperty());
         textArea.prefHeightProperty().bind(tabPane.heightProperty());
+        textArea.setStyle("-fx-highlight-fill: lightgray; -fx-highlight-text-fill: blue; -fx-font-size: 15px;");
 
         hbox.getChildren().add(textArea);
         hbox.setAlignment(Pos.CENTER);
@@ -332,6 +366,8 @@ public class MainView {
         setHBoxListners(hbox, tabPane, tab);
 
         setTextAreaListner(textArea, tabPane, tab);
+
+        clearSearchIndexes();
     }
 
 
@@ -365,6 +401,7 @@ public class MainView {
 
         TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
         tabPane.getTabs().remove(tab);
+        clearSearchIndexes();
     }
 
 
@@ -480,5 +517,337 @@ public class MainView {
                 }
             }
         });
+    }
+
+    /*
+   * <p>Создаёт тектсовую форму для поиска текста</p>
+    */
+    public void createSearchDialog(){
+
+        clearSearchIndexes();
+
+        VBox mainContainer  = (VBox) parent.lookup(VB_MAIN_CONTAINER_ID);
+
+        VBox fieldContainer = new VBox(); //find and replace containers
+
+        HBox searchContainer = new HBox(); //only searchTextChange view
+
+        Label labelSearch = new Label("Find");
+        TextField tvSearch = new TextField();
+        Button btnSearch = new Button("Find");
+
+        tvSearch.setPrefWidth(App.WIDTH - labelSearch.getWidth() - btnSearch.getWidth() - 120);
+
+        searchContainer.getChildren().addAll(labelSearch, tvSearch, btnSearch);
+
+        HBox.setMargin(labelSearch, new Insets(0, 10, 0, 10));
+        HBox.setMargin(btnSearch, new Insets(0, 10, 0, 10));
+
+        fieldContainer.getChildren().add(searchContainer);
+        mainContainer.getChildren().add(0, fieldContainer);
+
+        tvSearch.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+
+               searchTextChange(newValue);
+            }
+        });
+
+        tvSearch.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ENTER)  {
+
+                    String text = tvSearch.getText();
+                    findNextString(text);
+                }
+            }
+        });
+
+        btnSearch.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+
+                String text = tvSearch.getText();
+                findNextString(text);
+            }
+        });
+    }
+
+    /*
+ * <p>Поиск нового слова соответствующего запросу</p>
+  */
+    private void findNextString(String text) {
+
+        if (position == count) {
+
+            clearSearchIndexes();
+        }
+        else {
+
+            start += text.length();
+        }
+
+        searchTextEnter(text);
+    }
+
+    /*
+  * <p>Вспомогательые индексты для поиска</p>
+   */
+    private int start = -1;
+    private int position = 0;
+    private int count = 0;
+
+    /*
+   * <p>Работает когда содержимое тектсоовго поля меняется</p>
+   * <p>Показывает только текущее слово</p>
+    */
+    public void searchTextChange(String text){
+
+        TextArea textArea = getCurrentTabTextArea();
+
+        String content = textArea.getText();
+
+        start = content.toLowerCase().indexOf(text.toLowerCase());
+
+        if (start < 0) {
+
+            textArea.selectRange(0,0);
+
+            displayUnableToFindText(text);
+
+            count = 0;
+            position = 0;
+
+            return;
+        }
+
+        textArea.selectRange(start, start + text.length());
+
+        Pattern p = Pattern.compile(text, Pattern.UNICODE_CASE|Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(content);
+        count = 0;
+        while(m.find()) { count++; }
+
+        position = 1;
+
+        displayMatchedCount(position, count);
+    }
+
+    /*
+   * <p>Работает когда в тектсовом поле наживаем enter</p>
+   * <p>Показывает при каждом нажатии следующее совпадение</p>
+    */
+    public void searchTextEnter(String text){
+
+        TextArea textArea = getCurrentTabTextArea();
+
+        String content = textArea.getText();
+
+        if (start < 0){
+
+            start = content.toLowerCase().indexOf(text.toLowerCase());
+            position++;
+        }
+        else {
+
+            start = content.toLowerCase().indexOf(text.toLowerCase(), start);
+            position++;
+        }
+
+        if (start < 0) {
+
+            textArea.selectRange(0,0);
+
+            displayUnableToFindText(text);
+
+            clearSearchIndexes();
+
+            return;
+        }
+
+        textArea.selectRange(start, start + text.length());
+
+        Pattern p = Pattern.compile(text, Pattern.UNICODE_CASE|Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(content);
+        count = 0;
+        while(m.find()) { count++; }
+
+        displayMatchedCount(position, count);
+    }
+
+    /*
+  * <p>Информация о том что такое слово не наййдено</p>
+   */
+    private void displayUnableToFindText(String text) {
+
+        Label labelCount  = (Label) parent.lookup(LABEL_MATCHED_COUNT_ID);
+        labelCount.setText("Unable to find " + text);
+    }
+
+    /*
+  * <p>Отображает информацию о текущей позиции найденного слова и о количестве найденных слов</p>
+   */
+    private void displayMatchedCount(int position, int count){
+
+        Label labelCount  = (Label) parent.lookup(LABEL_MATCHED_COUNT_ID);
+        labelCount.setText(String.format("%d of %d matches", position, count));
+    }
+    /*
+      * <p>Очищает индексы для поиска</p>
+       */
+    private void clearSearchIndexes() {
+
+        start = 0;
+        position = 0;
+        count = 0;
+    }
+
+    /*
+ * <p>Создаём диалог поиска-замены</p>
+  */
+    public void createReplaceDialog(){
+
+        clearSearchIndexes();
+
+        VBox mainContainer  = (VBox) parent.lookup(VB_MAIN_CONTAINER_ID);
+
+        VBox fieldContainer = new VBox(); //find and replace containers
+
+        HBox searchContainer = new HBox(); //only searchTextChange view
+
+        Label labelSearch = new Label("Find");
+        TextField tvSearch = new TextField();
+        Button btnSearch = new Button("Find");
+
+        tvSearch.setPrefWidth(App.WIDTH - labelSearch.getWidth() - btnSearch.getWidth() - 120);
+
+        searchContainer.getChildren().addAll(labelSearch, tvSearch, btnSearch);
+
+        HBox.setMargin(labelSearch, new Insets(0, 10, 0, 10));
+        HBox.setMargin(btnSearch, new Insets(0, 10, 0, 10));
+
+        //
+        HBox replaceContainer = new HBox(); //only searchTextChange view
+
+        Label labelReplace= new Label("Replace");
+        TextField tvReplace = new TextField();
+        Button btnReplace = new Button("Replace");
+        tvReplace.setPrefWidth(App.WIDTH - labelReplace.getWidth() - btnReplace.getWidth() - 140);
+
+        replaceContainer.getChildren().addAll(labelReplace, tvReplace, btnReplace);
+
+        HBox.setMargin(labelReplace, new Insets(0, 5, 0, 5));
+        HBox.setMargin(btnReplace, new Insets(0, 10, 0, 10));
+        //
+
+        VBox.setMargin(searchContainer, new Insets(10, 0, 0, 0));
+        VBox.setMargin(replaceContainer, new Insets(10, 0, 0, 0));
+
+        fieldContainer.getChildren().addAll(searchContainer, replaceContainer);
+        mainContainer.getChildren().add(0, fieldContainer);
+
+        tvSearch.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+
+                searchTextChange(newValue);
+            }
+        });
+
+        tvSearch.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ENTER)  {
+
+                    String text = tvSearch.getText();
+
+                    if (position == count) {
+
+                        clearSearchIndexes();
+                    }
+                    else {
+
+                        start += text.length();
+                    }
+
+                    searchTextEnter(text);
+                }
+            }
+        });
+
+        tvReplace.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ENTER)  {
+
+                    replaceText(getCurrentTabTextArea(), tvSearch.getText(), tvReplace.getText());
+                }
+            }
+        });
+
+        btnSearch.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+
+                String text = tvSearch.getText();
+                findNextString(text);
+            }
+        });
+
+        btnReplace.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+
+                replaceText(getCurrentTabTextArea(), tvSearch.getText(), tvReplace.getText());
+            }
+        });
+    }
+
+    /*
+ * <p>Заменяем текст в текущей textArea</p>
+  */
+    private void replaceText(TextArea textArea, String oldText, String newText) {
+
+        String content = textArea.getText();
+
+        Pattern p = Pattern.compile(oldText, Pattern.UNICODE_CASE|Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(content);
+        count = 0;
+        while(m.find()) { count++; }
+
+        content = content.replace(oldText, newText);
+        textArea.setText(content);
+
+        displayReplaceCount(count);
+    }
+
+
+    /*
+ * <p>Отображение сколько замен быо сделано</p>
+  */
+    private void displayReplaceCount(int count) {
+
+        Label labelCount  = (Label) parent.lookup(LABEL_MATCHED_COUNT_ID);
+        labelCount.setText(String.format("Made %d replace", count));
+    }
+
+
+    /*
+ * <p>Здесь прячутся все поля поиска и замены и обнуляются все счётчики</p>
+ * <p>Например когда открываем поиск - замена а у нас до этого был поиск. Или когда открываем новую вкладку</p>
+  */
+    public void hideSearchReplaceDialog(){
+
+        VBox mainContainer  = (VBox) parent.lookup(VB_MAIN_CONTAINER_ID);
+
+        if (mainContainer.getChildren().size() > 1){
+
+            mainContainer.getChildren().remove(0);
+        }
+
+        Label labelCount  = (Label) parent.lookup(LABEL_MATCHED_COUNT_ID);
+        labelCount.setText("");
+
+        clearSearchIndexes();
+
     }
 }

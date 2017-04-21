@@ -21,6 +21,8 @@ public class MainController implements IMainController {
     private static final String SAVE_FILE = "save_file";
     private static final String SAVE_FILE_AS = "save_file_as";
     private static final String OPEN_FILE = "open_file";
+    private static final String FIND = "menu_find";
+    private static final String REPLACE = "menu_replace";
     private static final String EXIT = "exit";
 
     private static final String FILE_CHOOSER_OPEN_FILE = "Open text file";
@@ -74,6 +76,26 @@ public class MainController implements IMainController {
                         saveFileAs(App.getParent(), view, fileHelper);
                     }
                 }break;
+
+                case FIND:{
+
+                    if (view.hasTabs()) {
+
+                        view.hideSearchReplaceDialog();
+                        view.createSearchDialog();
+                    }
+                }break;
+
+                case REPLACE :{
+
+                    if (view.hasTabs()) {
+
+                        view.hideSearchReplaceDialog();
+                        view.createReplaceDialog();
+                    }
+                }break;
+
+
 
                 case EXIT: {
 
@@ -239,18 +261,36 @@ public class MainController implements IMainController {
     public void onCancel(Tab tab) {
 
         view.closeTab(tab);
+        chechRemoveTemporaryFile(tab);
     }
 
     @Override
     public void createNewTab(String header, String content) {
 
         view.createNewTab(header, content);
+        view.hideSearchReplaceDialog();
     }
 
     @Override
     public void closeTab(Tab tab) {
 
         view.closeTab(tab);
+       chechRemoveTemporaryFile(tab);
+    }
+
+    private void chechRemoveTemporaryFile(Tab tab) {
+
+        Object object = tab.getUserData();
+
+        if (object != null && object instanceof TabTag) {
+
+            TabTag item = (TabTag) object;
+
+            if ( item.wasSaved()) {
+
+                removeTemporaryFile(item.getHeader(), item.getPath());
+            }
+        }
     }
 
     @Override
@@ -266,4 +306,5 @@ public class MainController implements IMainController {
         FileHelper fileHelper = FileHelper.getInstance();
         fileHelper.removeTemporaryFile(header, path);
     }
+
 }
