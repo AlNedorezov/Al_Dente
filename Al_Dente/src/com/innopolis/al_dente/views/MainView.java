@@ -430,9 +430,11 @@ public class MainView {
                         if (!newText.equals(oldText)) {
 
                             updateCurrentTabSaveState(true);
+                            iMainController.fillTemporaryFile(item.getHeader(), item.getPath(), newText);
                         } else {
 
                             updateCurrentTabSaveState(false);
+                            iMainController.removeTemporaryFile(item.getHeader(), item.getPath());
                         }
                     }
                 }

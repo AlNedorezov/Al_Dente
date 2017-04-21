@@ -154,6 +154,8 @@ public class MainController implements IMainController {
 
             view.updateCurrentTab(item);
             view.updateCurrentTabSaveState(false);
+
+            removeTemporaryFile(item.getHeader(), item.getPath());
         }
     }
 
@@ -249,5 +251,19 @@ public class MainController implements IMainController {
     public void closeTab(Tab tab) {
 
         view.closeTab(tab);
+    }
+
+    @Override
+    public void fillTemporaryFile(String header, String path, String content) {
+
+        FileHelper fileHelper = FileHelper.getInstance();
+        fileHelper.fillTemporaryFile(header, path, content);
+    }
+
+    @Override
+    public void removeTemporaryFile(String header, String path) {
+
+        FileHelper fileHelper = FileHelper.getInstance();
+        fileHelper.removeTemporaryFile(header, path);
     }
 }
