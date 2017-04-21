@@ -357,6 +357,8 @@ public class MainView {
         setHBoxListners(hbox, tabPane, tab);
 
         setTextAreaListner(textArea, tabPane, tab);
+
+        clearSearchIndexes();
     }
 
 
@@ -390,6 +392,7 @@ public class MainView {
 
         TabPane tabPane = (TabPane) parent.lookup(TAB_PANE_ID);
         tabPane.getTabs().remove(tab);
+        clearSearchIndexes();
     }
 
 
@@ -507,13 +510,16 @@ public class MainView {
         });
     }
 
+    /*
+   * <p>Создаёт тектсовую форму для поиска текста</p>
+    */
     public void createSearchDialog(){
 
         VBox mainContainer  = (VBox) parent.lookup(VB_MAIN_CONTAINER_ID);
 
         VBox fieldContainer = new VBox(); //find and replace containers
 
-        HBox searchContainer = new HBox(); //only search view
+        HBox searchContainer = new HBox(); //only searchTextChange view
 
         Label labelSearch = new Label("Find");
         TextField tvSearch = new TextField();
@@ -530,7 +536,7 @@ public class MainView {
             @Override
             public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
 
-               search(newValue);
+               searchTextChange(newValue);
             }
         });
 
@@ -538,21 +544,42 @@ public class MainView {
             @Override
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.ENTER)  {
+
                     String text = tvSearch.getText();
 
-                   search(text);
+                   if (position == count) {
+
+                      clearSearchIndexes();
+                   }
+                   else {
+
+                       start += text.length();
+                   }
+
+                    searchTextEnter(text);
                 }
             }
         });
     }
 
-    public void search(String text){
+    /*
+  * <p>Вспомогательые индексты для поиска</p>
+   */
+    private int start = -1;
+    private int position = 0;
+    private int count = 0;
+
+    /*
+   * <p>Работает когда содержимое тектсоовго поля меняется</p>
+   * <p>Показывает только текущее слово</p>
+    */
+    public void searchTextChange(String text){
 
         TextArea textArea = getCurrentTabTextArea();
 
         String content = textArea.getText();
 
-        int start = content.indexOf(text);
+        start = content.indexOf(text);
 
         if (start < 0) {
 
@@ -560,28 +587,90 @@ public class MainView {
 
             clearMatherCount(text);
 
+            count = 0;
+            position = 0;
+
             return;
         }
 
         textArea.selectRange(start, start + text.length());
 
-        int count = 0;
         Pattern p = Pattern.compile(text, Pattern.UNICODE_CASE|Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(content);
+        count = 0;
         while(m.find()) { count++; }
 
-        displayMatchedCount(1, count);
+        position = 1;
+
+        displayMatchedCount(position, count);
     }
 
+    /*
+   * <p>Работает когда в тектсовом поле наживаем enter</p>
+   * <p>Показывает при каждом нажатии следующее совпадение</p>
+    */
+    public void searchTextEnter(String text){
+
+        TextArea textArea = getCurrentTabTextArea();
+
+        String content = textArea.getText();
+
+        if (start < 0){
+
+            start = content.indexOf(text);
+            position++;
+        }
+        else {
+
+            start = content.indexOf(text, start);
+            position++;
+        }
+
+        if (start < 0) {
+
+            textArea.selectRange(0,0);
+
+            clearMatherCount(text);
+
+            clearSearchIndexes();
+
+            return;
+        }
+
+        textArea.selectRange(start, start + text.length());
+
+        Pattern p = Pattern.compile(text, Pattern.UNICODE_CASE|Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(content);
+        count = 0;
+        while(m.find()) { count++; }
+
+        displayMatchedCount(position, count);
+    }
+
+    /*
+  * <p>Информация о том что такое слово не наййдено</p>
+   */
     private void clearMatherCount(String text) {
 
         Label labelCount  = (Label) parent.lookup(LABEL_MATCHED_COUNT_ID);
         labelCount.setText("Unable to find " + text);
     }
 
+    /*
+  * <p>Отображает информацию о текущей позиции найденного слова и о количестве найденных слов</p>
+   */
     private void displayMatchedCount(int position, int count){
 
         Label labelCount  = (Label) parent.lookup(LABEL_MATCHED_COUNT_ID);
         labelCount.setText(String.format("%d of %d matches", position, count));
+    }
+    /*
+      * <p>Очищает индексы для поиска</p>
+       */
+    private void clearSearchIndexes() {
+
+        start = 0;
+        position = 0;
+        count = 0;
     }
 }
