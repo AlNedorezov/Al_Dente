@@ -5,6 +5,7 @@ import com.innopolis.al_dente.IMainController;
 import com.innopolis.al_dente.models.TabTag;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -535,11 +536,14 @@ public class MainView {
 
         Label labelSearch = new Label("Find");
         TextField tvSearch = new TextField();
-        tvSearch.setPrefWidth(App.WIDTH - labelSearch.getWidth() - 50);
+        Button btnSearch = new Button("Find");
 
-        searchContainer.getChildren().addAll(labelSearch, tvSearch);
+        tvSearch.setPrefWidth(App.WIDTH - labelSearch.getWidth() - btnSearch.getWidth() - 120);
+
+        searchContainer.getChildren().addAll(labelSearch, tvSearch, btnSearch);
 
         HBox.setMargin(labelSearch, new Insets(0, 10, 0, 10));
+        HBox.setMargin(btnSearch, new Insets(0, 10, 0, 10));
 
         fieldContainer.getChildren().add(searchContainer);
         mainContainer.getChildren().add(0, fieldContainer);
@@ -558,20 +562,32 @@ public class MainView {
                 if (keyEvent.getCode() == KeyCode.ENTER)  {
 
                     String text = tvSearch.getText();
-
-                   if (position == count) {
-
-                      clearSearchIndexes();
-                   }
-                   else {
-
-                       start += text.length();
-                   }
-
-                    searchTextEnter(text);
+                    findNextString(text);
                 }
             }
         });
+
+        btnSearch.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+
+                String text = tvSearch.getText();
+                findNextString(text);
+            }
+        });
+    }
+
+    private void findNextString(String text) {
+
+        if (position == count) {
+
+            clearSearchIndexes();
+        }
+        else {
+
+            start += text.length();
+        }
+
+        searchTextEnter(text);
     }
 
     /*
@@ -796,6 +812,7 @@ public class MainView {
 
     /*
  * <p>Здесь прячутся все поля поиска и замены и обнуляются все счётчики</p>
+ * <p>Например когда открываем поиск - замена а у нас до этого был поиск. Или когда открываем новую вкладку</p>
   */
     public void hideSearchReplaceDialog(){
 

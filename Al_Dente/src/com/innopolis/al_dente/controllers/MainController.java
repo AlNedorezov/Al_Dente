@@ -21,7 +21,7 @@ public class MainController implements IMainController {
     private static final String SAVE_FILE = "save_file";
     private static final String SAVE_FILE_AS = "save_file_as";
     private static final String OPEN_FILE = "open_file";
-    private static final String SEARCH = "menu_search";
+    private static final String FIND = "menu_find";
     private static final String REPLACE = "menu_replace";
     private static final String EXIT = "exit";
 
@@ -77,7 +77,7 @@ public class MainController implements IMainController {
                     }
                 }break;
 
-                case SEARCH :{
+                case FIND:{
 
                     if (view.hasTabs()) {
 
@@ -268,6 +268,7 @@ public class MainController implements IMainController {
     public void createNewTab(String header, String content) {
 
         view.createNewTab(header, content);
+        view.hideSearchReplaceDialog();
     }
 
     @Override
