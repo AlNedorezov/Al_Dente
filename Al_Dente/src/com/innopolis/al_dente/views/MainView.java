@@ -576,6 +576,9 @@ public class MainView {
         });
     }
 
+    /*
+ * <p>Поиск нового слова соответствующего запросу</p>
+  */
     private void findNextString(String text) {
 
         if (position == count) {
@@ -717,22 +720,27 @@ public class MainView {
 
         Label labelSearch = new Label("Find");
         TextField tvSearch = new TextField();
-        tvSearch.setPrefWidth(App.WIDTH - labelSearch.getWidth() - 60);
+        Button btnSearch = new Button("Find");
 
-        searchContainer.getChildren().addAll(labelSearch, tvSearch);
+        tvSearch.setPrefWidth(App.WIDTH - labelSearch.getWidth() - btnSearch.getWidth() - 120);
 
-        HBox.setMargin(labelSearch, new Insets(0, 15, 0, 15));
+        searchContainer.getChildren().addAll(labelSearch, tvSearch, btnSearch);
+
+        HBox.setMargin(labelSearch, new Insets(0, 10, 0, 10));
+        HBox.setMargin(btnSearch, new Insets(0, 10, 0, 10));
 
         //
         HBox replaceContainer = new HBox(); //only searchTextChange view
 
         Label labelReplace= new Label("Replace");
         TextField tvReplace = new TextField();
-        tvReplace.setPrefWidth(App.WIDTH - labelReplace.getWidth() - 60);
+        Button btnReplace = new Button("Replace");
+        tvReplace.setPrefWidth(App.WIDTH - labelReplace.getWidth() - btnReplace.getWidth() - 140);
 
-        replaceContainer.getChildren().addAll(labelReplace, tvReplace);
+        replaceContainer.getChildren().addAll(labelReplace, tvReplace, btnReplace);
 
         HBox.setMargin(labelReplace, new Insets(0, 5, 0, 5));
+        HBox.setMargin(btnReplace, new Insets(0, 10, 0, 10));
         //
 
         VBox.setMargin(searchContainer, new Insets(10, 0, 0, 0));
@@ -777,6 +785,21 @@ public class MainView {
 
                     replaceText(getCurrentTabTextArea(), tvSearch.getText(), tvReplace.getText());
                 }
+            }
+        });
+
+        btnSearch.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+
+                String text = tvSearch.getText();
+                findNextString(text);
+            }
+        });
+
+        btnReplace.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+
+                replaceText(getCurrentTabTextArea(), tvSearch.getText(), tvReplace.getText());
             }
         });
     }
