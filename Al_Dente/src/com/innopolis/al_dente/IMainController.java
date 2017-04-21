@@ -16,4 +16,11 @@ public interface IMainController {
     <p>Нажал на кнопку cancel в msg</p>
      */
     void onCancel(Tab tab);
+
+    /*
+   <p>Создание новой вкладки</p>
+    */
+    void createNewTab(String header, String content);
+
+    void  closeTab(Tab tab);
 }

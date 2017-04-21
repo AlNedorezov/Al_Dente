@@ -51,7 +51,7 @@ public class MainController implements IMainController {
 
                 case MENU_NEW_FILE :{
 
-                    view.createNewTab(null, null);
+                    createNewTab(null, null);
                     TabTag item = new TabTag();
                     view.updateCurrentTab(item);
                 }break;
@@ -125,7 +125,7 @@ public class MainController implements IMainController {
             item.setPath(file.getAbsolutePath());
             item.setHeader(header);
 
-            view.createNewTab(header, content);
+            createNewTab(header, content);
             view.updateCurrentTab(item);
         }
     }
@@ -235,6 +235,18 @@ public class MainController implements IMainController {
 
     @Override
     public void onCancel(Tab tab) {
+
+        view.closeTab(tab);
+    }
+
+    @Override
+    public void createNewTab(String header, String content) {
+
+        view.createNewTab(header, content);
+    }
+
+    @Override
+    public void closeTab(Tab tab) {
 
         view.closeTab(tab);
     }
